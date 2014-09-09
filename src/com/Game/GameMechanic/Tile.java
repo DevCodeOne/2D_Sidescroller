@@ -8,8 +8,12 @@ public class Tile {
     private TickTileEvent tick_event;
     private boolean has_events;
     private boolean has_tick_events;
+    private boolean emits_light;
     private int frame_index;
     private int max_frames;
+    private int radius;
+    private float brightness;
+    private float emiting_light;
 
     public Tile(char id, boolean transparent, boolean solid, int max_frames) {
         this.id = id;
@@ -41,6 +45,10 @@ public class Tile {
     public void attach_tick_events(TickTileEvent event) {
         this.tick_event = event;
         this.has_tick_events = true;
+    }
+
+    public void set_emit_light(boolean val) {
+        this.emits_light = val;
     }
 
     public void inc_frame_index() {
@@ -81,5 +89,33 @@ public class Tile {
 
     public TickTileEvent get_tick_event() {
         return tick_event;
+    }
+
+    public int get_radius() {
+        return radius;
+    }
+
+    public void set_radius(int val) {
+        this.radius = val;
+    }
+
+    public boolean emits_light() {
+        return emits_light;
+    }
+
+    public float get_brightness() {
+        return brightness;
+    }
+
+    public void set_brightness(float val) {
+        this.brightness = Math.min(val, 1);
+    }
+
+    public float get_emiting_light() {
+        return emiting_light;
+    }
+
+    public void set_emiting_light(float val) {
+        this.emiting_light = Math.min(val, 1);
     }
 }

@@ -47,6 +47,18 @@ public class Pixmap {
         }
     }
 
+    public void blit(Pixmap pixmap, int x, int y, float brightness) {
+        int endx = Math.min(x + pixmap.width, this.width);
+        int endy = Math.min(y + pixmap.height, this.height);
+        int size_x = endx - x;
+        int size_y = endy - y;
+        for (int i = x < 0 ? -x : 0; i < size_x; i++) {
+            for (int j = y < 0 ? -y : 0; j < size_y; j++) {
+                pixels[(i + x) + off[j + y]] = (int) (((pixmap.pixels[i + pixmap.off[j]] >> 16) & 0xFF) * brightness) << 16 | (int) (((pixmap.pixels[i + pixmap.off[j]] >> 8) & 0xFF) * brightness) << 8 | (int) (((pixmap.pixels[i + pixmap.off[j]]) & 0xFF) * brightness);
+            }
+        }
+    }
+
     public void blit_flip_vertically(Pixmap pixmap, int x, int y) {
         int endx = Math.min(x + pixmap.width, this.width);
         int endy = Math.min(y + pixmap.height, this.height);
@@ -80,6 +92,19 @@ public class Pixmap {
             for (int j = y < 0 ? -y : 0; j < size_y; j++) {
                 if (pixmap.pixels[i + pixmap.off[j]] != COLOR_TRANSPARENT)
                     pixels[(i + x) + off[j + y]] = pixmap.pixels[i + pixmap.off[j]];
+            }
+        }
+    }
+
+    public void blit_transparent(Pixmap pixmap, int x, int y, float brightness) {
+        int endx = Math.min(x + pixmap.width, this.width);
+        int endy = Math.min(y + pixmap.height, this.height);
+        int size_x = endx - x;
+        int size_y = endy - y;
+        for (int i = x < 0 ? -x : 0; i < size_x; i++) {
+            for (int j = y < 0 ? -y : 0; j < size_y; j++) {
+                if (pixmap.pixels[i + pixmap.off[j]] != COLOR_TRANSPARENT)
+                    pixels[(i + x) + off[j + y]] = (int) (((pixmap.pixels[i + pixmap.off[j]] >> 16) & 0xFF) * brightness) << 16 | (int) (((pixmap.pixels[i + pixmap.off[j]] >> 8) & 0xFF) * brightness) << 8 | (int) (((pixmap.pixels[i + pixmap.off[j]]) & 0xFF) * brightness);
             }
         }
     }

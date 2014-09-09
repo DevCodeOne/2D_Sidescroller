@@ -17,7 +17,7 @@ public class Map implements Tick {
     private int offx, offy;
     private ArrayList<Tile> tick_event_handler;
     private int skip_ticks[];
-
+    private LightMap map;
 
     public Map(Pixmap map, int look_up[], TileInstance tileInstances[]) {
         this.width = map.get_width();
@@ -40,6 +40,7 @@ public class Map implements Tick {
         }
         this.tick_event_handler = new ArrayList<Tile>(width * height);
         this.skip_ticks = new int[width * height];
+        this.map = new LightMap(this);
     }
 
     public void attach_to_game_clock(GameClock clock) {
@@ -64,16 +65,17 @@ public class Map implements Tick {
             size_x = this.width - startx;
         if (starty + size_y >= this.height)
             size_y = this.height - starty;
+        map.render_light_map();
         Tile tile;
         for (int i = startx < 0 ? -startx : 0; i < size_x; i++) {
             for (int j = starty < 0 ? -starty : 0; j < size_y; j++) {
                 tile = map_val[startx + i][(starty + j)];
                 if (tile.is_transparent()) {
-                    pixmap.blit(tileInstances[background_tile_id].get_pixmap(), offx_pix + i * tile_width, (offy_pix + j * tile_height));
-                    pixmap.blit_transparent(tileInstances[tile.get_id()].get_frame(tile.get_frame_index()), offx_pix + i * tile_width, (offy_pix + j * tile_height));
+                    pixmap.blit(tileInstances[background_tile_id].get_pixmap(), offx_pix + i * tile_width, (offy_pix + j * tile_height), tile.get_brightness());
+                    pixmap.blit_transparent(tileInstances[tile.get_id()].get_frame(tile.get_frame_index()), offx_pix + i * tile_width, (offy_pix + j * tile_height), tile.get_brightness());
                     continue;
                 }
-                pixmap.blit(tileInstances[tile.get_id()].get_frame(tile.get_frame_index()), offx_pix + i * tile_width, (offy_pix + j * tile_height));
+                pixmap.blit(tileInstances[tile.get_id()].get_frame(tile.get_frame_index()), offx_pix + i * tile_width, (offy_pix + j * tile_height), tile.get_brightness());
             }
         }
     }
@@ -169,5 +171,9 @@ public class Map implements Tick {
     @Override
     public int tick_skip() {
         return 0;
+    }
+
+    public LightMap get_light_map() {
+        return map;
     }
 }

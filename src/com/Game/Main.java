@@ -42,6 +42,7 @@ public class Main extends Display implements InputListener {
         tileInstances[6] = new TileInstance(true, false, new Pixmap[]{Pixmap.load_image("res/torch.png"), Pixmap.load_image("res/torch2.png")});
         map = new Map(Pixmap.load_image("res/map.png"), new int[]{0, (127 << 8 | 14), (~0) & ~(0xFF << 24), 255, 255 << 16, 127 << 16, 148 << 8 | 255}, tileInstances);
         map.set_background_tile((char) 2);
+        map.get_light_map().set_light_emitting_global((char) 6, 0.75f, 5);
         map.attach_events_global(new TileEvent() {
             @Override
             public void on_step(Tile tile, Entity entity) {
