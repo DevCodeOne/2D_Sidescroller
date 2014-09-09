@@ -40,16 +40,36 @@ public class Entity {
         if (-offx > x || -offy > y || -offx + pixmap.get_width() < x || -offy + pixmap.get_height() < y)
             return;
         if (!flip_vertically)
-            pixmap.blit_transparent(frames[frame_index], (int) (x + offx), (int) (y + offy));
+            pixmap.blit(frames[frame_index], (int) (x + offx), (int) (y + offy), true);
         else
-            pixmap.blit_flip_vertically_transparent(frames[frame_index], (int) (x + offx), (int) (y + offy));
+            pixmap.blit_flip_vertically(frames[frame_index], (int) (x + offx), (int) (y + offy), true);
     }
 
     public void draw(Pixmap pixmap) {
         if (!flip_vertically)
-            pixmap.blit_transparent(frames[frame_index], (int) (x), (int) (y));
+            pixmap.blit(frames[frame_index], (int) (x), (int) (y), true);
         else
-            pixmap.blit_flip_vertically_transparent(frames[frame_index], (int) (x), (int) (y));
+            pixmap.blit_flip_vertically(frames[frame_index], (int) (x), (int) (y), true);
+    }
+
+    public void draw(Pixmap pixmap, int offx, int offy, Map map) {
+        int startx = (int) get_x() / map.get_tile_width();
+        int starty = (int) get_y() / map.get_tile_height();
+        int endx = (int) (get_x() + get_width()) / map.get_tile_width();
+        int endy = (int) (get_y() + get_height()) / map.get_tile_height();
+        int len = (endx - startx) * (endy - starty);
+        float brightness = 0;
+        for (int i = startx; i < endx; i++)
+            for (int j = starty; j < endy; j++) {
+                brightness += map.get_data(i, j).get_brightness();
+            }
+        brightness /= (float) len;
+        if (-offx > x || -offy > y || -offx + pixmap.get_width() < x || -offy + pixmap.get_height() < y)
+            return;
+        if (!flip_vertically)
+            pixmap.blit(frames[frame_index], (int) (x + offx), (int) (y + offy), brightness, true);
+        else
+            pixmap.blit_flip_vertically(frames[frame_index], (int) (x + offx), (int) (y + offy), brightness, true);
     }
 
     public void set_pos(float x, float y) {

@@ -71,11 +71,11 @@ public class Map implements Tick {
             for (int j = starty < 0 ? -starty : 0; j < size_y; j++) {
                 tile = map_val[startx + i][(starty + j)];
                 if (tile.is_transparent()) {
-                    pixmap.blit(tileInstances[background_tile_id].get_pixmap(), offx_pix + i * tile_width, (offy_pix + j * tile_height), tile.get_brightness());
-                    pixmap.blit_transparent(tileInstances[tile.get_id()].get_frame(tile.get_frame_index()), offx_pix + i * tile_width, (offy_pix + j * tile_height), tile.get_brightness());
+                    pixmap.blit(tileInstances[background_tile_id].get_pixmap(), offx_pix + i * tile_width, (offy_pix + j * tile_height), tile.get_brightness(), false);
+                    pixmap.blit(tileInstances[tile.get_id()].get_frame(tile.get_frame_index()), offx_pix + i * tile_width, (offy_pix + j * tile_height), tile.get_brightness(), true);
                     continue;
                 }
-                pixmap.blit(tileInstances[tile.get_id()].get_frame(tile.get_frame_index()), offx_pix + i * tile_width, (offy_pix + j * tile_height), tile.get_brightness());
+                pixmap.blit(tileInstances[tile.get_id()].get_frame(tile.get_frame_index()), offx_pix + i * tile_width, (offy_pix + j * tile_height), tile.get_brightness(), false);
             }
         }
     }

@@ -42,7 +42,7 @@ public class Main extends Display implements InputListener {
         tileInstances[6] = new TileInstance(true, false, new Pixmap[]{Pixmap.load_image("res/torch.png"), Pixmap.load_image("res/torch2.png")});
         map = new Map(Pixmap.load_image("res/map.png"), new int[]{0, (127 << 8 | 14), (~0) & ~(0xFF << 24), 255, 255 << 16, 127 << 16, 148 << 8 | 255}, tileInstances);
         map.set_background_tile((char) 2);
-        map.get_light_map().set_light_emitting_global((char) 6, 0.75f, 5);
+        map.get_light_map().set_light_emitting_global((char) 6, 0.75f, 10);
         map.attach_events_global(new TileEvent() {
             @Override
             public void on_step(Tile tile, Entity entity) {
@@ -144,9 +144,9 @@ public class Main extends Display implements InputListener {
     public void draw_graphics(Pixmap graphics) {
         graphics.clear(20 << 16 | 28 << 8 | 31);
         map.draw_map(graphics);
-        player.draw(graphics, map.get_offx(), map.get_offy());
+        player.draw(graphics, map.get_offx(), map.get_offy(), map);
         for (int i = 0; i < count_enemies; i++)
-            enemy[i].draw(graphics, map.get_offx(), map.get_offy());
+            enemy[i].draw(graphics, map.get_offx(), map.get_offy(), map);
         for (int i = 0; i < 10; i++) {
             hearts[i].draw(graphics);
         }
