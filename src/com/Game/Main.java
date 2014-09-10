@@ -32,7 +32,7 @@ public class Main extends Display implements InputListener {
         Main m = new Main(1600, 992, 800, 496);
         pixgraphics = new PixGraphics(m.getPixmap());
         pixgraphics.load_font("res/font.png", 8);
-        tileInstances = new TileInstance[7];
+        tileInstances = new TileInstance[8];
         tileInstances[0] = new TileInstance(false, true, Pixmap.load_image("res/brick.png"));
         tileInstances[1] = new TileInstance(false, true, Pixmap.load_image("res/moss_brick.png"));
         tileInstances[2] = new TileInstance(false, false, Pixmap.load_image("res/air.png"));
@@ -40,9 +40,30 @@ public class Main extends Display implements InputListener {
         tileInstances[4] = new TileInstance(true, false, new Pixmap[]{Pixmap.load_image("res/trap_hidden.png"), Pixmap.load_image("res/trap_exposed.png")});
         tileInstances[5] = new TileInstance(true, true, new Pixmap[]{Pixmap.load_image("res/trap_door.png"), Pixmap.load_image("res/trap_door2.png")});
         tileInstances[6] = new TileInstance(true, false, new Pixmap[]{Pixmap.load_image("res/torch.png"), Pixmap.load_image("res/torch2.png")});
-        map = new Map(Pixmap.load_image("res/map.png"), new int[]{0, (127 << 8 | 14), (~0) & ~(0xFF << 24), 255, 255 << 16, 127 << 16, 148 << 8 | 255}, tileInstances);
+        tileInstances[7] = new TileInstance(false, false, new Pixmap[]{Pixmap.load_image("res/lava.png"), Pixmap.load_image("res/lava2.png")});
+        map = new Map(Pixmap.load_image("res/map.png"), new int[]{0, (127 << 8 | 14), (~0) & ~(0xFF << 24), 255, 255 << 16, 127 << 16, 148 << 8 | 255, 255 << 16 | 174 << 8}, tileInstances);
         map.set_background_tile((char) 2);
         map.get_light_map().set_light_emitting_global((char) 6, 0.75f, 10);
+        map.get_light_map().set_light_emitting_global((char) 7, 0.5f, 5);
+        map.attach_tick_event_global(new TickTileEvent() {
+            public void tick(Tile tile) {
+                tile.inc_frame_index();
+            }
+
+            public int skip_ticks() {
+                return 5;
+            }
+        }, (char) 6);
+        map.attach_tick_event_global(new TickTileEvent() {
+            public void tick(Tile tile) {
+                tile.inc_frame_index();
+                tile.set_emiting_light(tile.get_emiting_light() == 0.5f ? 0.45f : 0.5f);
+            }
+
+            public int skip_ticks() {
+                return 10;
+            }
+        }, (char) 7);
         map.attach_events_global(new TileEvent() {
             @Override
             public void on_step(Tile tile, Entity entity) {
@@ -76,15 +97,6 @@ public class Main extends Display implements InputListener {
                 tile.set_frame_index(0);
             }
         }, (char) 5);
-        map.attach_tick_event_global(new TickTileEvent() {
-            public void tick(Tile tile) {
-                tile.inc_frame_index();
-            }
-
-            public int skip_ticks() {
-                return 5;
-            }
-        }, (char) 6);
         handler = new KeyboardHandler(m);
         handler.set_listener(m);
         player = new Player(new Pixmap[]{

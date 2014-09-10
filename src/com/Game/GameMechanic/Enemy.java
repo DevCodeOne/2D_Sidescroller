@@ -40,13 +40,13 @@ public class Enemy extends Entity implements Tick {
         if (-offx > get_x() || -offy > get_y() || -offx + pixmap.get_width() < get_x() || -offy + pixmap.get_height() < get_y())
             return;
         if (!is_flipped())
-            pixmap.blit(get_frame(get_frame_index()), (int) (get_x() + offx), (int) (get_y() + offy), true);
+            pixmap.blit(get_frame(get_frame_index()), (int) (get_x() + offx) - (get_pixmap().get_width() >> 1), (int) (get_y() + offy), true);
         else
-            pixmap.blit_flip_vertically(get_frame(get_frame_index()), (int) (get_x() + offx), (int) (get_y() + offy), true);
+            pixmap.blit_flip_vertically(get_frame(get_frame_index()), (int) (get_x() + offx) - (get_pixmap().get_width() >> 1), (int) (get_y() + offy), true);
         if (health_bar == null)
             return;
         int health_per = (int) ((get_health() / get_health_stat()) * 10) * health_bar.get_width() / 10;
-        pixmap.blit(health_bar, 0, 0, health_per, health_bar.get_height(), (int) (get_x() + offx), (int) (get_y() + offy) - 10, true);
+        pixmap.blit(health_bar, 0, 0, health_per, health_bar.get_height(), (int) (get_x() + offx) - (get_pixmap().get_width() >> 1), (int) (get_y() + offy) - 10, true);
     }
 
     public void tick() {

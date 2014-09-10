@@ -22,55 +22,52 @@ public class Physics implements Tick {
 
     public static boolean check_for_collision_basic(Map map, Entity entity) {
         boolean collide = false;
-        if (map.get_data_absolute_pos((int) entity.get_x(), (int) entity.get_y()).is_solid()) {
+        if (map.get_data_absolute_pos((int) (entity.get_x() - (entity.get_width() >> 1)), (int) entity.get_y()).is_solid()) {
             collide = true;
-            if (map.get_data_absolute_pos((int) entity.get_x(), (int) entity.get_y()).has_events())
-                map.get_data_absolute_pos((int) entity.get_x(), (int) entity.get_y()).call_on_step(entity);
+            if (map.get_data_absolute_pos((int) (entity.get_x() - (entity.get_width() >> 1)), (int) entity.get_y()).has_events())
+                map.get_data_absolute_pos((int) (entity.get_x() - (entity.get_width() >> 1)), (int) entity.get_y()).call_on_step(entity);
         }
-        if (map.get_data_absolute_pos((int) entity.get_x() + entity.get_width(), (int) (entity.get_y() + entity.get_height() + 0.5f)).is_solid()) {
+        if (map.get_data_absolute_pos((int) (entity.get_x() + (entity.get_width() >> 1)), (int) (entity.get_y() + entity.get_height())).is_solid()) {
             collide = true;
-            if (map.get_data_absolute_pos((int) entity.get_x() + entity.get_width(), (int) (entity.get_y() + entity.get_height() + 0.5f)).has_events())
-                map.get_data_absolute_pos((int) entity.get_x() + entity.get_width(), (int) (entity.get_y() + entity.get_height() + 0.5f)).call_on_step(entity);
+            if (map.get_data_absolute_pos((int) (entity.get_x() + (entity.get_width() >> 1)), (int) (entity.get_y() + entity.get_height())).has_events())
+                map.get_data_absolute_pos((int) (entity.get_x() + (entity.get_width() >> 1)), (int) (entity.get_y() + entity.get_height())).call_on_step(entity);
         }
-        if (map.get_data_absolute_pos((int) entity.get_x() + entity.get_width(), (int) entity.get_y()).is_solid()) {
+        if (map.get_data_absolute_pos((int) (entity.get_x() - (entity.get_width() >> 1)), (int) entity.get_y()).is_solid()) {
             collide = true;
-            if (map.get_data_absolute_pos((int) entity.get_x() + entity.get_width(), (int) entity.get_y()).has_events())
-                map.get_data_absolute_pos((int) entity.get_x() + entity.get_width(), (int) entity.get_y()).call_on_step(entity);
+            if (map.get_data_absolute_pos((int) (entity.get_x() + (entity.get_width() >> 1)), (int) entity.get_y()).has_events())
+                map.get_data_absolute_pos((int) (entity.get_x() + (entity.get_width() >> 1)), (int) entity.get_y()).call_on_step(entity);
         }
-        if (map.get_data_absolute_pos((int) entity.get_x(), (int) entity.get_y() + entity.get_height()).is_solid()) {
+        if (map.get_data_absolute_pos((int) (entity.get_x() - (entity.get_width() >> 1)), (int) entity.get_y() + entity.get_height()).is_solid()) {
             collide = true;
-            if (map.get_data_absolute_pos((int) entity.get_x(), (int) (entity.get_y() + entity.get_height() + 0.5f)).has_events())
-                map.get_data_absolute_pos((int) entity.get_x(), (int) (entity.get_y() + entity.get_height() + 0.5f)).call_on_step(entity);
+            if (map.get_data_absolute_pos((int) (entity.get_x() - (entity.get_width() >> 1)), (int) (entity.get_y() + entity.get_height())).has_events())
+                map.get_data_absolute_pos((int) (entity.get_x() - (entity.get_width() >> 1)), (int) (entity.get_y() + entity.get_height())).call_on_step(entity);
         }
         return collide;
     }
 
     public static boolean check_for_collision_side(Map map, Entity entity) {
-        int startx_l = (int) entity.get_x() / map.get_tile_width();
+        int startx_l = (int) (((entity.get_x() - (entity.get_width() >> 1)) / map.get_tile_width()) + 0.5f);
         int starty_lr = (int) entity.get_y() / map.get_tile_height();
-        int startx_r = (int) (entity.get_x() + entity.get_width()) / map.get_tile_width();
+        int startx_r = (int) (((entity.get_x() + (entity.get_width() >> 1)) / map.get_tile_width()) + 0.5f);
         int endy_lr = (int) (entity.get_y() + entity.get_height()) / map.get_tile_height();
         boolean collision = false;
         for (int i = starty_lr; i <= endy_lr; i++) {
-            if (map.get_data(startx_l, i).is_solid()) {
-                collision = true;
-                if (map.get_data(startx_l, i).has_events())
-                    map.get_data(startx_l, i).call_on_step(entity);
-            }
-            if (map.get_data(startx_r, i).is_solid()) {
-                collision = true;
-                if (map.get_data(startx_r, i).has_events())
-                    map.get_data(startx_r, i).call_on_step(entity);
+            for (int j = startx_l; j < startx_r; j++) {
+                if (map.get_data(j, i).is_solid()) {
+                    collision = true;
+                    if (map.get_data(j, i).has_events())
+                        map.get_data(j, i).call_on_step(entity);
+                }
             }
         }
         return collision;
     }
 
     public static boolean check_for_solid_object_bottom(Map map, Entity entity) {
-        int startx_l = (int) entity.get_x() / map.get_tile_width();
-        int startx_r = (int) (entity.get_x() + entity.get_width()) / map.get_tile_width();
-        int endy_lr = ((int) (entity.get_y() + entity.get_height()) / map.get_tile_height()) + 1;
-        for (int i = startx_l; i <= startx_r; i++) {
+        int startx_l = (int) (((entity.get_x() - (entity.get_width() >> 1)) / map.get_tile_width()) + 0.5f);
+        int startx_r = (int) (((entity.get_x() + (entity.get_width() >> 1)) / map.get_tile_width()) + 0.5f);
+        int endy_lr = (int) (((entity.get_y() + entity.get_height()) / (float) map.get_tile_height())) + 1;
+        for (int i = startx_l; i < startx_r; i++) {
             if (map.get_data(i, endy_lr).is_solid()) {
                 return true;
             }
@@ -101,9 +98,9 @@ public class Physics implements Tick {
 
             entity.change_pos_by(0, entity.get_velocity_y());
             walk_y = true;
-            if (check_for_collision_basic(map, entity)) {
+            if (check_for_collision_side(map, entity)) {
                 entity.change_pos_by(0, -entity.get_velocity_y());
-                if (entity.get_velocity_y() > 0) { // falling
+                if (entity.get_velocity_y() > 0) {
                     entity.set_velocity_y(0);
                     entity.set_on_ground(true);
                 }
@@ -116,7 +113,7 @@ public class Physics implements Tick {
 
             entity.change_pos_by(entity.get_velocity_x(), 0);
             walk_x = true;
-            if (Physics.check_for_collision_side(map, entity)) {
+            if (check_for_collision_side(map, entity)) {
                 entity.change_pos_by(-entity.get_velocity_x(), 0);
                 walk_x = false;
             }

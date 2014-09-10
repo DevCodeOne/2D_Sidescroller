@@ -40,16 +40,16 @@ public class Entity {
         if (-offx > x || -offy > y || -offx + pixmap.get_width() < x || -offy + pixmap.get_height() < y)
             return;
         if (!flip_vertically)
-            pixmap.blit(frames[frame_index], (int) (x + offx), (int) (y + offy), true);
+            pixmap.blit(frames[frame_index], (int) (x + offx) - (get_pixmap().get_width() >> 1), (int) (y + offy), true);
         else
-            pixmap.blit_flip_vertically(frames[frame_index], (int) (x + offx), (int) (y + offy), true);
+            pixmap.blit_flip_vertically(frames[frame_index], (int) (x + offx) - (get_pixmap().get_width() >> 1), (int) (y + offy), true);
     }
 
     public void draw(Pixmap pixmap) {
         if (!flip_vertically)
-            pixmap.blit(frames[frame_index], (int) (x), (int) (y), true);
+            pixmap.blit(frames[frame_index], (int) (x) - (get_pixmap().get_width() >> 1), (int) (y), true);
         else
-            pixmap.blit_flip_vertically(frames[frame_index], (int) (x), (int) (y), true);
+            pixmap.blit_flip_vertically(frames[frame_index], (int) (x) - (get_pixmap().get_width() >> 1), (int) (y), true);
     }
 
     public void draw(Pixmap pixmap, int offx, int offy, Map map) {
@@ -67,9 +67,9 @@ public class Entity {
         if (-offx > x || -offy > y || -offx + pixmap.get_width() < x || -offy + pixmap.get_height() < y)
             return;
         if (!flip_vertically)
-            pixmap.blit(frames[frame_index], (int) (x + offx), (int) (y + offy), brightness, true);
+            pixmap.blit(frames[frame_index], (int) (x + offx) - (get_pixmap().get_width() >> 1), (int) (y + offy), brightness, true);
         else
-            pixmap.blit_flip_vertically(frames[frame_index], (int) (x + offx), (int) (y + offy), brightness, true);
+            pixmap.blit_flip_vertically(frames[frame_index], (int) (x + offx) - (get_pixmap().get_width() >> 1), (int) (y + offy), brightness, true);
     }
 
     public void set_pos(float x, float y) {

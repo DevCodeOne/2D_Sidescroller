@@ -81,8 +81,8 @@ public class Map implements Tick {
     }
 
     public void toggle_events(Entity entity, char events) {
-        int startx_l = (int) (entity.get_x() / get_tile_width());
-        int startx_r = (int) (((entity.get_x() + entity.get_width()) / get_tile_width()) + .5f);
+        int startx_l = (int) ((entity.get_x() - (entity.get_width() >> 1)) / get_tile_width());
+        int startx_r = (int) (((entity.get_x() + (entity.get_width() >> 1)) / get_tile_width()) + .5f);
         int starty_lr = (int) (((entity.get_y() - entity.get_height()) / get_tile_height()) + .5f);
         int endy_lr = (int) (((entity.get_y() + entity.get_height()) / get_tile_height()) + .5f);
         for (int i = starty_lr; i <= endy_lr; i++) {
