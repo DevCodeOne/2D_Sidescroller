@@ -105,7 +105,7 @@ public class Main extends Display implements InputListener {
                     i * 32 + 5, 10);
         }
         physics = new Physics(map, 0.75f, 7f);
-        clock = new GameClock(15, 1024);
+        clock = new GameClock(16, 1024);
         m.attach_to_game_clock(clock);
         handler.attach_to_game_clock(clock);
         physics.attach_to_game_clock(clock);
