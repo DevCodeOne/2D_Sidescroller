@@ -10,7 +10,6 @@ public class Entity {
     private float velocity_x;
     private Pixmap[] frames;
     private boolean on_ground;
-    private boolean ignore_pyhsics;
     private int frame_index;
     private long frame_changed;
     private boolean flip_vertically;
@@ -21,10 +20,7 @@ public class Entity {
     private boolean has_events;
 
     public Entity(Pixmap texture, int x, int y) {
-        this.frames = new Pixmap[1];
-        this.frames[0] = texture;
-        this.x = x;
-        this.y = y;
+        this(new Pixmap[]{texture}, x, y);
     }
 
     public Entity(Pixmap[] frames, int x, int y) {
@@ -159,10 +155,6 @@ public class Entity {
 
     public void set_velocity_y(float val) {
         velocity_y = val;
-    }
-
-    public boolean ignore_physics() {
-        return ignore_pyhsics;
     }
 
     public boolean is_on_ground() {

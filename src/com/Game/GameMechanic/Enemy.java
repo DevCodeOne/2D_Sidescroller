@@ -12,11 +12,7 @@ public class Enemy extends Entity implements Tick {
     private Pixmap health_bar;
 
     public Enemy(Pixmap texture, int x, int y, float health, float velocity, Map map) {
-        super(texture, x, y);
-        this.velocity = velocity;
-        this.dir = 'L';
-        this.map = map;
-        this.set_health(health);
+        this(new Pixmap[]{texture}, x, y, health, velocity, map);
     }
 
     public Enemy(Pixmap[] frames, int x, int y, float health, float velocity, Map map) {
@@ -57,7 +53,7 @@ public class Enemy extends Entity implements Tick {
     public void tick() {
         if (dir == 'L') {
             change_pos_by(velocity, 0);
-            if (Physics.check_for_solid_object_bottom(map, this) && !Physics.check_for_collision_side(map, this) && (get_x() / map.get_tile_width() < map.get_width())) {
+            if (Physics.check_for_solid_object_bottom(map, this) && !Physics.check_for_collision(map, this) && (get_x() / map.get_tile_width() < map.get_width())) {
                 change_pos_by(-velocity, 0);
                 walk(velocity);
                 if (System.currentTimeMillis() - frame_last_changed() > 100)
@@ -69,7 +65,7 @@ public class Enemy extends Entity implements Tick {
                 set_frame_index(0);
                 dir = 'R';
                 change_pos_by(-velocity, 0);
-                if (Physics.check_for_solid_object_bottom(map, this) && !Physics.check_for_collision_side(map, this) && get_x() > 0) {
+                if (Physics.check_for_solid_object_bottom(map, this) && !Physics.check_for_collision(map, this) && get_x() > 0) {
                     change_pos_by(velocity, 0);
                     walk(-velocity);
                     if (System.currentTimeMillis() - frame_last_changed() > 100)
@@ -79,7 +75,7 @@ public class Enemy extends Entity implements Tick {
             }
         } else if (dir == 'R') {
             change_pos_by(-velocity, 0);
-            if (Physics.check_for_solid_object_bottom(map, this) && !Physics.check_for_collision_side(map, this) && get_x() > 0) {
+            if (Physics.check_for_solid_object_bottom(map, this) && !Physics.check_for_collision(map, this) && get_x() > 0) {
                 change_pos_by(velocity, 0);
                 walk(-velocity);
                 if (System.currentTimeMillis() - frame_last_changed() > 100)
@@ -91,7 +87,7 @@ public class Enemy extends Entity implements Tick {
                 set_frame_index(0);
                 dir = 'L';
                 change_pos_by(velocity, 0);
-                if (Physics.check_for_solid_object_bottom(map, this) && !Physics.check_for_collision_side(map, this) && (get_x() / map.get_tile_width() < map.get_width())) {
+                if (Physics.check_for_solid_object_bottom(map, this) && !Physics.check_for_collision(map, this) && (get_x() / map.get_tile_width() < map.get_width())) {
                     change_pos_by(-velocity, 0);
                     walk(velocity);
                     if (System.currentTimeMillis() - frame_last_changed() > 100)
