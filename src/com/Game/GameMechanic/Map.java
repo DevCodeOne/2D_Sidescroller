@@ -119,7 +119,7 @@ public class Map implements Tick {
     }
 
     public Tile get_data(int x, int y) {
-        return map_val[(x >= 0 && x < width) ? x : x < 0 ? 0 : width - 1][(y >= 0 && y < height) ? y : y < 0 ? 0 : height - 1];
+        return map_val[(x > 0 && x < width) ? x : x <= 0 ? 0 : width - 1][(y >= 0 && y < height) ? y : y < 0 ? 0 : height - 1];
     }
 
     public Tile get_data_absolute_pos(int x, int y) {

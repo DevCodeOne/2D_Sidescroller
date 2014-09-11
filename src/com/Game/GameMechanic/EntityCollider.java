@@ -25,21 +25,9 @@ public class EntityCollider implements Tick {
                 if (j != i) {
                     entity2 = entities.get(j);
 
-                    if (entity.get_x() < entity2.get_x())
-                        if (entity.get_x() + entity.get_width() < entity2.get_x())
-                            continue;
-                    if (entity.get_x() > entity2.get_x())
-                        if (entity.get_x() > entity2.get_x() + entity2.get_width())
-                            continue;
-                    if (entity.get_y() < entity2.get_y())
-                        if (entity.get_y() + entity.get_height() < entity2.get_y())
-                            continue;
-                    if (entity.get_y() > entity2.get_y())
-                        if (entity.get_y() > entity2.get_y() + entity2.get_height())
-                            continue;
-
-                    if (entity.has_events())
-                        entity.call_on_collision(entity2);
+                    if (entity.get_bounds().collides(entity2.get_bounds()))
+                        if (entity.has_events())
+                            entity.call_on_collision(entity2);
                 }
 
             }

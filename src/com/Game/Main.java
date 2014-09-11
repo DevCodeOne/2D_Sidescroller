@@ -20,6 +20,7 @@ public class Main extends Display implements InputListener {
     static PixGraphics pixgraphics;
     static Physics physics;
     static Enemy enemy[];
+    static Platform platform;
     static GameClock clock;
     static String actions = "N";
     static int count_enemies = 20;
@@ -111,10 +112,11 @@ public class Main extends Display implements InputListener {
                     entity2.dec_health(0.1f);
             }
         });
+        platform = new Platform(Pixmap.load_image("res/platform.png"), 100, 300, 400, 300, map);
         hearts = new Entity[10];
         for (int i = 0; i < 10; i++) {
             hearts[i] = new Entity(new Pixmap[]{Pixmap.load_image("res/heart.png"), Pixmap.load_image("res/half_heart.png"), Pixmap.load_image("res/empty_heart.png")},
-                    i * 32 + 5, 10);
+                    i * 32 + 16, 10);
         }
         physics = new Physics(map, 0.75f, 7f);
         clock = new GameClock(16, 1024);
@@ -122,6 +124,7 @@ public class Main extends Display implements InputListener {
         handler.attach_to_game_clock(clock);
         physics.attach_to_game_clock(clock);
         map.attach_to_game_clock(clock);
+        platform.attach_to_game_clock(clock);
         enemy = new Enemy[count_enemies];
         Pixmap[] pixmap = new Pixmap[]{Pixmap.load_image("res/enemy.png"), Pixmap.load_image("res/enemy2.png"),
                 Pixmap.load_image("res/enemy.png"), Pixmap.load_image("res/enemy3.png")};
@@ -146,6 +149,7 @@ public class Main extends Display implements InputListener {
         for (int i = 0; i < count_enemies; i++)
             enemy[i].attach_to_game_clock(clock);
         physics.add_entity(player);
+        physics.add_entity(platform);
         for (int i = 0; i < count_enemies; i++) {
             physics.add_entity(enemy[i]);
         }
@@ -157,13 +161,14 @@ public class Main extends Display implements InputListener {
         graphics.clear(20 << 16 | 28 << 8 | 31);
         map.draw_map(graphics);
         player.draw(graphics, map.get_offx(), map.get_offy(), map);
+        platform.draw(graphics, map.get_offx(), map.get_offy(), map);
         for (int i = 0; i < count_enemies; i++)
             enemy[i].draw(graphics, map.get_offx(), map.get_offy(), map);
         for (int i = 0; i < 10; i++) {
             hearts[i].draw(graphics);
         }
         pixgraphics.set_color(255 << 16 | 255 << 8 | 255);
-        pixgraphics.draw_string_centered("Player", (int) player.get_x() + map.get_offx() + player.get_width() / 2, (int) player.get_y() + map.get_offy() - 10);
+        pixgraphics.draw_string_centered("Player", (int) player.get_x() + map.get_offx(), (int) player.get_y() + map.get_offy() - 10);
         pixgraphics.draw_string(Integer.toString(get_fps()), 20, 40);
         pixgraphics.draw_string("Fs", 50, 40);
     }

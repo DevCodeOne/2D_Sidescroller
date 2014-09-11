@@ -27,7 +27,7 @@ public class LightMap {
                             int dis = (int) (Math.sqrt(k * k + l * l) + 0.5f);
                             if (dis < map.get_data(i, j).get_radius()) {
                                 // emit
-                                map.get_data(i + k, j + l).set_brightness(((1 - ((float) dis / (float) tile.get_radius())) * tile.get_emiting_light()) + map.get_data(i + k, j + l).get_brightness());
+                                map.get_data(i + k, j + l).set_brightness(((1 - (dis / (float) tile.get_radius())) * tile.get_emiting_light()) + map.get_data(i + k, j + l).get_brightness());
                             }
                         }
                     }

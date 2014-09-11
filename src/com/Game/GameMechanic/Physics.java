@@ -64,6 +64,8 @@ public class Physics implements Tick {
         for (int i = 0; i < len; i++) {
             Entity entity = entities.get(i);
 
+            if (entity.ignores_physics())
+                continue;
             if (entity.get_velocity_y() < max_factor)
                 entity.inc_velocity_y(factor);
 

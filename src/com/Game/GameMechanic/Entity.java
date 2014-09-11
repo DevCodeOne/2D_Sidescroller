@@ -1,13 +1,14 @@
 package com.Game.GameMechanic;
 
 import com.Game.Graphics.Pixmap;
+import com.Game.Mathematics.Rectangle;
+import com.Game.Mathematics.Vector2f;
 
 public class Entity {
 
     public float max_velocity_x;
-    private float x, y;
-    private float velocity_y;
-    private float velocity_x;
+    private Vector2f position;
+    private Vector2f velocity;
     private Pixmap[] frames;
     private boolean on_ground;
     private int frame_index;
@@ -18,6 +19,8 @@ public class Entity {
     private boolean is_hovering;
     private EntityEvent event;
     private boolean has_events;
+    private boolean ignores_physics;
+    private Rectangle rectangle;
 
     public Entity(Pixmap texture, int x, int y) {
         this(new Pixmap[]{texture}, x, y);
@@ -28,24 +31,25 @@ public class Entity {
         for (int i = 0; i < frames.length; i++) {
             this.frames[i] = frames[i];
         }
-        this.x = x;
-        this.y = y;
+        this.position = new Vector2f(x, y);
+        this.velocity = new Vector2f();
+        this.rectangle = new Rectangle(position, new Vector2f(position.get_x() + get_width(), position.get_y() + get_height()));
     }
 
     public void draw(Pixmap pixmap, int offx, int offy) {
-        if (-offx > x || -offy > y || -offx + pixmap.get_width() < x || -offy + pixmap.get_height() < y)
+        if (-offx > position.get_x() || -offy > position.get_y() || -offx + pixmap.get_width() < position.get_x() || -offy + pixmap.get_height() < position.get_y())
             return;
         if (!flip_vertically)
-            pixmap.blit(frames[frame_index], (int) (x + offx) - (get_pixmap().get_width() >> 1), (int) (y + offy), true);
+            pixmap.blit(frames[frame_index], (int) (position.get_x() + offx) - (get_pixmap().get_width() >> 1), (int) (position.get_y() + offy), true);
         else
-            pixmap.blit_flip_vertically(frames[frame_index], (int) (x + offx) - (get_pixmap().get_width() >> 1), (int) (y + offy), true);
+            pixmap.blit_flip_vertically(frames[frame_index], (int) (position.get_x() + offx) - (get_pixmap().get_width() >> 1), (int) (position.get_y() + offy), true);
     }
 
     public void draw(Pixmap pixmap) {
         if (!flip_vertically)
-            pixmap.blit(frames[frame_index], (int) (x) - (get_pixmap().get_width() >> 1), (int) (y), true);
+            pixmap.blit(frames[frame_index], (int) (position.get_x()) - (get_pixmap().get_width() >> 1), (int) (position.get_y()), true);
         else
-            pixmap.blit_flip_vertically(frames[frame_index], (int) (x) - (get_pixmap().get_width() >> 1), (int) (y), true);
+            pixmap.blit_flip_vertically(frames[frame_index], (int) (position.get_x()) - (get_pixmap().get_width() >> 1), (int) (position.get_y()), true);
     }
 
     public void draw(Pixmap pixmap, int offx, int offy, Map map) {
@@ -60,22 +64,22 @@ public class Entity {
                 brightness += map.get_data(i, j).get_brightness();
             }
         brightness /= (float) len;
-        if (-offx > x || -offy > y || -offx + pixmap.get_width() < x || -offy + pixmap.get_height() < y)
+        if (-offx > position.get_x() || -offy > position.get_y() || -offx + pixmap.get_width() < position.get_x() || -offy + pixmap.get_height() < position.get_y())
             return;
         if (!flip_vertically)
-            pixmap.blit(frames[frame_index], (int) (x + offx) - (get_pixmap().get_width() >> 1), (int) (y + offy), brightness, true);
+            pixmap.blit(frames[frame_index], (int) (position.get_x() + offx) - (get_pixmap().get_width() >> 1), (int) (position.get_y() + offy), brightness, true);
         else
-            pixmap.blit_flip_vertically(frames[frame_index], (int) (x + offx) - (get_pixmap().get_width() >> 1), (int) (y + offy), brightness, true);
+            pixmap.blit_flip_vertically(frames[frame_index], (int) (position.get_x() + offx) - (get_pixmap().get_width() >> 1), (int) (position.get_y() + offy), brightness, true);
     }
 
     public void set_pos(float x, float y) {
-        this.x = x;
-        this.y = y;
+        position.setTo(x, y);
+        rectangle.setTo(position, new Vector2f(position.get_x() + get_width(), position.get_y() + get_height()));
     }
 
     public void change_pos_by(float x, float y) {
-        this.x += x;
-        this.y += y;
+        position.add(x, y);
+        rectangle.translate(x, y);
     }
 
     public void hovers(boolean val) {
@@ -94,8 +98,8 @@ public class Entity {
     }
 
     public boolean walk(float x) {
-        if (max_velocity_x >= Math.abs(velocity_x + x))
-            velocity_x += x;
+        if (max_velocity_x >= Math.abs(velocity.get_x() + x))
+            velocity.add(x, 0);
         return true;
     }
 
@@ -126,19 +130,19 @@ public class Entity {
     }
 
     public void inc_velocity_y(float val) {
-        velocity_y += val;
+        velocity.add(0, val);
     }
 
     public void inc_velocity_x(float val) {
-        velocity_x += val;
+        velocity.add(val, 0);
     }
 
     public float get_x() {
-        return (int) x;
+        return (int) position.get_x();
     }
 
     public float get_y() {
-        return (int) y;
+        return (int) position.get_y();
     }
 
     public int get_width() {
@@ -150,11 +154,19 @@ public class Entity {
     }
 
     public float get_velocity_y() {
-        return velocity_y;
+        return velocity.get_y();
     }
 
     public void set_velocity_y(float val) {
-        velocity_y = val;
+        velocity.setTo(velocity.get_x(), val);
+    }
+
+    public float get_velocity_x() {
+        return velocity.get_x();
+    }
+
+    public void set_velocity_x(float val) {
+        velocity.setTo(val, velocity.get_y());
     }
 
     public boolean is_on_ground() {
@@ -177,6 +189,10 @@ public class Entity {
         frame_changed = System.currentTimeMillis();
         if (val < frames.length)
             frame_index = val;
+    }
+
+    public void ignores_physics(boolean val) {
+        ignores_physics = val;
     }
 
     public Pixmap get_pixmap() {
@@ -212,12 +228,12 @@ public class Entity {
         return health_stat;
     }
 
-    public float get_velocity_x() {
-        return velocity_x;
+    public boolean ignores_physics() {
+        return ignores_physics;
     }
 
-    public void set_velocity_x(float val) {
-        velocity_x = val;
+    public Rectangle get_bounds() {
+        return rectangle;
     }
 
 }
