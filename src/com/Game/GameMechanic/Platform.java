@@ -35,12 +35,22 @@ public class Platform extends Entity implements Tick {
             public void on_collision(Entity entity, Entity entity2) {
                 if (entity_index > 4 || !(entity2 instanceof Player))
                     return;
-                if (Math.abs((entity2.get_y() + entity2.get_height()) - (entity.get_y())) < 4) {
-                    carry[entity_index] = entity2;
-                    entity2.set_pos(entity2.get_x(), entity.get_y() - entity2.get_height());
-                    entity2.set_velocity_y(0);
-                    entity2.set_on_ground(true);
-                    entity_index++;
+                if (entity2.get_velocity_y() >= 0) {
+                    if (entity.get_y() - entity2.get_y() > 2) {
+                        Vector2f old_position = new Vector2f(entity2.get_x(), entity2.get_y());
+                        entity2.set_pos(entity2.get_x(), entity.get_y() - entity2.get_height());
+                        if (Physics.check_for_collision(((Platform) entity).get_map(), entity2)) {
+                            entity2.set_pos(old_position.get_x(), old_position.get_y());
+                            return;
+                        }
+                        entity2.set_pos(old_position.get_x(), old_position.get_y());
+                        ((Platform) entity).get_map().toggle_events(entity2, Map.ON_LEAVE);
+                        entity2.set_pos(entity2.get_x(), entity.get_y() - entity2.get_height());
+                        carry[entity_index] = entity2;
+                        entity2.set_on_ground(true);
+                        entity2.set_velocity_y(0);
+                        entity_index++;
+                    }
                 }
             }
         });
@@ -124,5 +134,9 @@ public class Platform extends Entity implements Tick {
 
     public void attach_to_game_clock(GameClock clock) {
         clock.attach(this);
+    }
+
+    public Map get_map() {
+        return map;
     }
 }

@@ -67,9 +67,9 @@ public class Entity {
         if (-offx > position.get_x() || -offy > position.get_y() || -offx + pixmap.get_width() < position.get_x() || -offy + pixmap.get_height() < position.get_y())
             return;
         if (!flip_vertically)
-            pixmap.blit(frames[frame_index], (int) (position.get_x() + offx) - (get_pixmap().get_width() >> 1), (int) (position.get_y() + offy), brightness, true);
+            pixmap.blit(frames[frame_index], (int) (position.get_x() + offx) - (get_pixmap().get_width() >> 1), (int) (position.get_y() + offy), brightness, false);
         else
-            pixmap.blit_flip_vertically(frames[frame_index], (int) (position.get_x() + offx) - (get_pixmap().get_width() >> 1), (int) (position.get_y() + offy), brightness, true);
+            pixmap.blit_flip_vertically(frames[frame_index], (int) (position.get_x() + offx) - (get_pixmap().get_width() >> 1), (int) (position.get_y() + offy), brightness, false);
     }
 
     public void set_pos(float x, float y) {
