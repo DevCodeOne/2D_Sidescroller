@@ -33,7 +33,7 @@ public class Entity {
         }
         this.position = new Vector2f(x, y);
         this.velocity = new Vector2f();
-        this.rectangle = new Rectangle(position, new Vector2f(position.get_x() + get_width(), position.get_y() + get_height()));
+        this.rectangle = new Rectangle(new Vector2f(position.get_x() - (get_width() >> 1), position.get_y()), new Vector2f(position.get_x() + (get_width() >> 1), position.get_y() + get_height()));
     }
 
     public void draw(Pixmap pixmap, int offx, int offy) {
@@ -74,7 +74,7 @@ public class Entity {
 
     public void set_pos(float x, float y) {
         position.setTo(x, y);
-        rectangle.setTo(position, new Vector2f(position.get_x() + get_width(), position.get_y() + get_height()));
+        rectangle.setTo(new Vector2f(position.get_x() - (get_width() >> 1), position.get_y()), new Vector2f(position.get_x() + (get_width() >> 1), position.get_y() + get_height()));
     }
 
     public void change_pos_by(float x, float y) {
