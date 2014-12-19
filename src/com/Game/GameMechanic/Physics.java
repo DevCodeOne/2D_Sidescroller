@@ -66,24 +66,28 @@ public class Physics implements Tick {
 
             if (entity.ignores_physics())
                 continue;
-            if (entity.get_velocity_y() < max_factor)
+            if (entity.get_velocity_y() < max_factor && !entity.is_on_ground())
                 entity.inc_velocity_y(factor);
 
-            entity.change_pos_by(0, entity.get_velocity_y());
-            walk_y = true;
-            if (check_for_collision(map, entity)) {
-                entity.change_pos_by(0, -entity.get_velocity_y());
-                if (entity.get_velocity_y() > 0) {
-                    entity.set_velocity_y(0);
-                    entity.set_on_ground(true);
+            if (entity.get_velocity_y() < 0 || !entity.is_on_ground()) {
+                entity.change_pos_by(0, entity.get_velocity_y());
+
+                walk_y = true;
+                if (check_for_collision(map, entity)) {
+                    entity.change_pos_by(0, -entity.get_velocity_y());
+                    if (entity.get_velocity_y() > 0) {
+                        entity.set_velocity_y(0);
+                        entity.set_on_ground(true);
+                        walk_y = false;
+                    }
                 }
+                if (walk_y)
+                    entity.set_on_ground(false);
+                if (walk_y)
+                    entity.change_pos_by(0, -entity.get_velocity_y());
+            } else {
                 walk_y = false;
             }
-            if (walk_y)
-                entity.set_on_ground(false);
-            if (walk_y)
-                entity.change_pos_by(0, -entity.get_velocity_y());
-
             entity.change_pos_by(entity.get_velocity_x(), 0);
             walk_x = true;
             if (check_for_collision(map, entity)) {
@@ -99,6 +103,9 @@ public class Physics implements Tick {
             entity.change_pos_by(walk_x ? entity.get_velocity_x() : 0, walk_y ? entity.get_velocity_y() : 0);
             if (walk_x || walk_y)
                 map.toggle_events(entity, Map.ON_STEP);
+
+            if (!check_for_solid_object_bottom(map, entity))
+                entity.set_on_ground(false);
         }
     }
 

@@ -43,16 +43,19 @@ public class Game extends Display implements InputListener {
     public void draw_graphics(Pixmap graphics) {
         graphics.clear(20 << 16 | 28 << 8 | 31);
         map.map.draw_map(graphics);
-        map.player.draw(graphics, map.map.get_offx(), map.map.get_offy(), map.map);
+        map.player.draw(graphics, map.map);
         /*platform.draw(graphics, map.map.get_offx(), map.map.get_offy(), map.map);*/
+        for (int i = 0; i < map.platforms.length; i++)
+            map.platforms[i].draw(graphics, map.map);
         for (int i = 0; i < map.enemies.length; i++)
-            map.enemies[i].draw(graphics, map.map.get_offx(), map.map.get_offy(), map.map);
+            map.enemies[i].draw(graphics, map.map);
         for (int i = 0; i < map.hearts.length; i++)
             map.hearts[i].draw(graphics);
         pixgraphics.set_color(255 << 16 | 255 << 8 | 255);
         pixgraphics.draw_string_centered("Player", (int) map.player.get_x() + map.map.get_offx(), (int) map.player.get_y() + map.map.get_offy() - 10);
         pixgraphics.draw_string(Integer.toString(get_fps()), 20, 40);
         pixgraphics.draw_string("Fs", 50, 40);
+        pixgraphics.draw_string(map.player.is_on_ground() ? "true" : "false", 20, 60);
     }
 
     @Override
@@ -129,11 +132,11 @@ public class Game extends Display implements InputListener {
             life--;
         }
 
-        if (map.player.get_y() > -map.map.get_offy() + get_resy() - 150)
-            map.map.scroll_by(0, 6);
-        if (map.player.get_y() < -map.map.get_offy() + 150)
-            map.map.scroll_by(0, -6);
-        map.map.scroll_by((int) ((map.player.get_x() + map.map.get_offx()) - (get_resx() >> 1)), 0);
+        if (map.player.get_y() > -map.map.get_offy() + get_resy() - 250)
+            map.map.scroll_by(0, 1);
+        if (map.player.get_y() < -map.map.get_offy() + 250)
+            map.map.scroll_by(0, -1);
+        map.map.scroll_by(((map.player.get_x() + map.map.get_offx()) - (get_resx() >> 1)), 0);
         if (!map.player.is_on_ground() && map.player.get_velocity_y() <= 0)
             map.player.set_frame_index(4);
     }

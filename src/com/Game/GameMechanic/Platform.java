@@ -12,9 +12,12 @@ public class Platform extends Entity implements Tick {
     private Vector2f start, end;
     private Vector2f direction;
     private float len;
+    private float start_len;
     private char action;
     private Entity carry[];
     private int entity_index;
+
+    // TODO Fix problems with platform
 
     public Platform(Pixmap pixmap, int startx, int starty, int endx, int endy, Map map) {
         this(new Pixmap[]{pixmap}, startx, starty, endx, endy, map);
@@ -26,6 +29,7 @@ public class Platform extends Entity implements Tick {
         this.end = new Vector2f(endx, endy);
         this.direction = new Vector2f(endx - startx, endy - starty);
         this.len = direction.get_len();
+        this.start_len = direction.get_len();
         this.direction.normalize();
         this.action = 'n';
         this.map = map;
@@ -36,7 +40,11 @@ public class Platform extends Entity implements Tick {
                 if (!(entity2 instanceof Player))
                     return;
                 if (entity2.get_velocity_y() >= 0) {
-                    if (entity.get_y() - entity2.get_y() > 1) {
+                    if (entity.get_y() - (entity2.get_y() + entity2.get_height()) < 2) {
+                        for (int i = 0; i < carry.length; i++) { // avoid duplicates
+                            if (carry[i] == entity2)
+                                return;
+                        }
                         Vector2f old_position = new Vector2f(entity2.get_x(), entity2.get_y());
                         entity2.set_pos(entity2.get_x(), entity.get_y() - entity2.get_height());
                         if (Physics.check_for_collision(((Platform) entity).get_map(), entity2)) {
@@ -47,8 +55,8 @@ public class Platform extends Entity implements Tick {
                         ((Platform) entity).get_map().toggle_events(entity2, Map.ON_LEAVE);
                         entity2.set_pos(entity2.get_x(), entity.get_y() - entity2.get_height());
                         carry[entity_index] = entity2;
-                        entity2.set_on_ground(true);
                         entity2.set_velocity_y(0);
+                        entity2.set_on_ground(true);
                         entity_index++;
                     }
                 }
@@ -68,24 +76,21 @@ public class Platform extends Entity implements Tick {
                             carry[i].change_pos_by(direction.get_x(), direction.get_y());
                             if (Physics.check_for_collision(map, carry[i])) {
                                 carry[i].change_pos_by(-direction.get_x(), -direction.get_y());
-                                carry[i] = null;
                             }
                         }
                     }
                 } else {
                     change_pos_by(-direction.get_x(), -direction.get_y());
                     action = 'o';
-                    direction = new Vector2f(start.get_x() - get_x(), start.get_y() - get_y());
-                    len = direction.get_len();
-                    direction.normalize();
+                    direction .mult(-1, -1);
+                    len = start_len;
                     return;
                 }
                 len--;
             } else {
                 action = 'o';
-                direction = new Vector2f(start.get_x() - get_x(), start.get_y() - get_y());
-                len = direction.get_len();
-                direction.normalize();
+                direction.mult(-1, -1);
+                len = start_len;
                 return;
             }
 
@@ -98,24 +103,21 @@ public class Platform extends Entity implements Tick {
                             carry[i].change_pos_by(direction.get_x(), direction.get_y());
                             if (Physics.check_for_collision(map, carry[i])) {
                                 carry[i].change_pos_by(-direction.get_x(), -direction.get_y());
-                                carry[i] = null;
                             }
                         }
                     }
                 } else {
                     change_pos_by(-direction.get_x(), -direction.get_y());
                     action = 'n';
-                    direction = new Vector2f(end.get_x() - get_x(), end.get_y() - get_y());
-                    len = direction.get_len();
-                    direction.normalize();
+                    direction .mult(-1, -1);
+                    len = start_len;
                     return;
                 }
                 len--;
             } else {
                 action = 'n';
-                direction = new Vector2f(end.get_x() - get_x(), end.get_y() - get_y());
-                len = direction.get_len();
-                direction.normalize();
+                direction .mult(-1, -1);
+                len = start_len;
                 return;
             }
         }
@@ -125,6 +127,10 @@ public class Platform extends Entity implements Tick {
             }
         }
         entity_index = 0;
+    }
+
+    public void set_map(Map map) {
+        this.map = map;
     }
 
     @Override

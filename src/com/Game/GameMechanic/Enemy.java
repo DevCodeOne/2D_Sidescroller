@@ -33,10 +33,10 @@ public class Enemy extends Entity implements Tick {
     }
 
     @Override
-    public void draw(Pixmap pixmap, int offx, int offy, Map map) {
-        super.draw(pixmap, offx, offy, map);
+    public void draw(Pixmap pixmap, Map map) {
+        super.draw(pixmap, map);
         if (health_bar != null)
-            draw_health_bar(pixmap, offx, offy);
+            draw_health_bar(pixmap, map.get_offx(), map.get_offy());
     }
 
     @Override

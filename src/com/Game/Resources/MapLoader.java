@@ -24,11 +24,12 @@ public class MapLoader {
     *
     * */
 
-    // TODO Add Platforms
+    // TODO Improve the maploader
 
     public static LoadedMap loadMap(String mapFile) {
         ArrayList<TileInstance> tileInstances = new ArrayList<TileInstance>();
         ArrayList<Enemy> enemies = new ArrayList<Enemy>();
+        ArrayList<Platform> platforms = new ArrayList<Platform>();
         Pixmap level = null;
         Player player = null;
         Entity hearts[] = null;
@@ -78,7 +79,6 @@ public class MapLoader {
                 }
                 TileInstance instance = new TileInstance(transparent, solid, textures, type, index, rgb_index);
                 tileInstances.add(instance);
-                // add tile
             } else if (line.contains("PLAYER")) {
                 line = scanner.nextLine();
                 String args[] = line.split(";");
@@ -103,7 +103,7 @@ public class MapLoader {
                         max_velocity = Float.parseFloat(args[i].split(":")[1].trim());
                     }
                 }
-                player = new Player(textures, posx, posy, health);
+                player = new Player(textures, posx, posy, health, null);
                 player.set_max_velocity(max_velocity);
             } else if (line.contains("PHYSICS")) {
                 line = scanner.nextLine();
@@ -167,20 +167,43 @@ public class MapLoader {
                 for (int j = 0; j < count; j++) {
                     hearts[j] = new Entity(textures, j * textures[0].get_width() + 16, 10);
                 }
+            } else if (line.contains("PLATFORM")) {
+                line = scanner.nextLine();
+                String args[] = line.split(";");
+                Pixmap texture = null;
+                int startx = 0;
+                int starty = 0;
+                int destx = 0;
+                int desty = 0;
+                for (int i = 0; i < args.length; i++) {
+                    if (args[i].contains("image")) {
+                        texture = ResourceLoader.load_image(args[i].split(":")[1].trim());
+                    } else if (args[i].contains("startx")) {
+                        startx = Integer.parseInt(args[i].split(":")[1].trim());
+                    } else if (args[i].contains("starty")) {
+                        starty = Integer.parseInt(args[i].split(":")[1].trim());
+                    } else if (args[i].contains("destx")) {
+                        destx = Integer.parseInt(args[i].split(":")[1].trim());
+                    } else if (args[i].contains("desty")) {
+                        desty = Integer.parseInt(args[i].split(":")[1].trim());
+                    }
+                }
+                Platform platform = new Platform(texture, startx, starty, destx, desty, null);
+                platforms.add(platform);
             }
         }
         int look_up[] = new int[tileInstances.size()];
-        TileInstance tileInstance[] = new TileInstance[tileInstances.size()];
+        TileInstance tileInstances_arr[] = new TileInstance[tileInstances.size()];
         for (int i = 0; i < tileInstances.size(); i++) {
             look_up[tileInstances.get(i).get_index()] = tileInstances.get(i).get_rgb_index();
-            tileInstance[tileInstances.get(i).get_index()] = tileInstances.get(i);
+            tileInstances_arr[tileInstances.get(i).get_index()] = tileInstances.get(i);
         }
-        map = new Map(level, look_up, tileInstance);
+        map = new Map(level, look_up, tileInstances_arr);
 
-        for (int i = 0; i < tileInstance.length; i++) {
-            if (tileInstance[i].get_type() == TileInstance.TYPE_BACKGROUND) {
+        for (int i = 0; i < tileInstances_arr.length; i++) {
+            if (tileInstances_arr[i].get_type() == TileInstance.TYPE_BACKGROUND) {
               map.set_background_tile((char) i);
-            } else if (tileInstance[i].get_type() == TileInstance.TYPE_TORCH) {
+            } else if (tileInstances_arr[i].get_type() == TileInstance.TYPE_TORCH) {
                 map.attach_tick_event_global(new TickTileEvent() {
                     public void tick(Tile tile) {
                         tile.inc_frame_index();
@@ -191,7 +214,7 @@ public class MapLoader {
                     }
                 }, (char) i);
                 map.get_light_map().set_light_emitting_global((char) i, 0.75f, 10);
-            } else if (tileInstance[i].get_type() == TileInstance.TYPE_LAVA) {
+            } else if (tileInstances_arr[i].get_type() == TileInstance.TYPE_LAVA) {
                 map.attach_tick_event_global(new TickTileEvent() {
                     public void tick(Tile tile) {
                         tile.inc_frame_index();
@@ -203,7 +226,7 @@ public class MapLoader {
                     }
                 }, (char) i);
                 map.get_light_map().set_light_emitting_global((char) i, 0.5f, 5);
-            } else if (tileInstance[i].get_type() == TileInstance.TYPE_TRAP) {
+            } else if (tileInstances_arr[i].get_type() == TileInstance.TYPE_TRAP) {
                 map.attach_events_global(new TileEvent() {
                     @Override
                     public void on_step(Tile tile, Entity entity) {
@@ -220,7 +243,7 @@ public class MapLoader {
                         tile.set_frame_index(0);
                     }
                 }, (char) i);
-            } else if (tileInstance[i].get_type() == TileInstance.TYPE_TRAPDOOR) {
+            } else if (tileInstances_arr[i].get_type() == TileInstance.TYPE_TRAPDOOR) {
                 map.attach_events_global(new TileEvent() {
                     @Override
                     public void on_step(Tile tile, Entity entity) {
@@ -242,7 +265,8 @@ public class MapLoader {
         }
 
         physics = new Physics(map, gravity, max_gravity);
-        clock = new GameClock(16, 1024);
+        clock = new GameClock(15, 1024);
+        player.setMap(map);
         player.set_max_velocity(5);
         player.attach_event(new EntityEvent() {
             @Override
@@ -274,16 +298,25 @@ public class MapLoader {
             physics.add_entity(enemy_arr[i]);
         }
 
+        Platform platform_arr[] = new Platform[platforms.size()];
+
+        for (int i = 0; i < platform_arr.length; i++) {
+            platform_arr[i] = platforms.get(i);
+            platform_arr[i].attach_to_game_clock(clock);
+            platform_arr[i].set_map(map);
+            physics.add_entity(platform_arr[i]);
+        }
+
         physics.add_entity(player);
         physics.attach_to_game_clock(clock);
         map.attach_to_game_clock(clock);
 
-        return new LoadedMap(map, tileInstance, player, physics, clock, hearts, enemy_arr);
+        return new LoadedMap(map, tileInstances_arr, player, physics, clock, hearts, enemy_arr, platform_arr);
     }
 
     static public class LoadedMap {
 
-        public LoadedMap(Map map, TileInstance tileInstance[], Entity player, Physics physics, GameClock clock, Entity hearts[], Enemy enemies[]) {
+        public LoadedMap(Map map, TileInstance tileInstance[], Entity player, Physics physics, GameClock clock, Entity hearts[], Enemy enemies[], Platform platforms[]) {
             this.map = map;
             this.tileInstance = tileInstance;
             this.player = player;
@@ -291,6 +324,7 @@ public class MapLoader {
             this.clock = clock;
             this.hearts = hearts;
             this.enemies = enemies;
+            this.platforms = platforms;
         }
 
         public Map map;
@@ -300,5 +334,6 @@ public class MapLoader {
         public GameClock clock;
         public Entity hearts[];
         public Enemy enemies[];
+        public Platform platforms[];
     }
 }

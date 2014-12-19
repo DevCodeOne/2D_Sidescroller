@@ -14,7 +14,7 @@ public class Map implements Tick {
     private int width, height;
     private int tile_width, tile_height;
     private char background_tile_id;
-    private int offx, offy;
+    private float offx, offy;
     private ArrayList<Tile> tick_event_handler;
     private int skip_ticks[];
     private LightMap map;
@@ -47,18 +47,18 @@ public class Map implements Tick {
         clock.attach(this);
     }
 
-    public void scroll_by(int x, int y) {
-        offx -= x;
-        offy -= y;
+    public void scroll_by(float x, float y) {
+        offx  -= x;
+        offy  -= y;
     }
 
     public void draw_map(Pixmap pixmap) {
         int tile_width = tileInstances[0].get_pixmap().get_width();
         int tile_height = tileInstances[0].get_pixmap().get_height();
-        int startx = -offx / tile_width;
-        int starty = -offy / tile_height;
-        int offx_pix = offx % tile_width;
-        int offy_pix = offy % tile_height;
+        int startx = -(int)(offx)  / tile_width;
+        int starty = -(int)(offy)  / tile_height;
+        int offxpix = (int)(offx)  % tile_width;
+        int offypix = (int)(offy)  % tile_height;
         int size_x = (pixmap.get_width() / tile_width) + 1;
         int size_y = (pixmap.get_height() / tile_height) + 1;
         if (startx + size_x >= this.width)
@@ -71,11 +71,11 @@ public class Map implements Tick {
             for (int j = starty < 0 ? -starty : 0; j < size_y; j++) {
                 tile = map_val[startx + i][(starty + j)];
                 if (tile.is_transparent()) {
-                    pixmap.blit(tileInstances[background_tile_id].get_pixmap(), offx_pix + i * tile_width, (offy_pix + j * tile_height), tile.get_brightness(), false);
-                    pixmap.blit(tileInstances[tile.get_id()].get_frame(tile.get_frame_index()), offx_pix + i * tile_width, (offy_pix + j * tile_height), tile.get_brightness(), true);
+                    pixmap.blit(tileInstances[background_tile_id].get_pixmap(), offxpix + i * tile_width, offypix + j * tile_height, tile.get_brightness(), false);
+                    pixmap.blit(tileInstances[tile.get_id()].get_frame(tile.get_frame_index()), offxpix + i * tile_width, offypix + j * tile_height, tile.get_brightness(), true);
                     continue;
                 }
-                pixmap.blit(tileInstances[tile.get_id()].get_frame(tile.get_frame_index()), offx_pix + i * tile_width, (offy_pix + j * tile_height), tile.get_brightness(), false);
+                pixmap.blit(tileInstances[tile.get_id()].get_frame(tile.get_frame_index()), offxpix + i * tile_width, offypix + j * tile_height, tile.get_brightness(), false);
             }
         }
     }
@@ -134,12 +134,12 @@ public class Map implements Tick {
         background_tile_id = (char) 2;
     }
 
-    public int get_offx() {
-        return offx;
+    public int get_offx () {
+        return (int)(offx) ;
     }
 
-    public int get_offy() {
-        return offy;
+    public int get_offy () {
+        return (int)(offy) ;
     }
 
     public int get_width() {

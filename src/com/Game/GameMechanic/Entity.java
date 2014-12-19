@@ -50,12 +50,14 @@ public class Entity {
             pixmap.blit_flip_vertically(frames[frame_index], (int) (position.get_x()) - (get_pixmap().get_width() >> 1), (int) (position.get_y()), true);
     }
 
-    public void draw(Pixmap pixmap, int offx, int offy, Map map) {
+    public void draw(Pixmap pixmap, Map map) {
         int startx = (int) get_x() / map.get_tile_width();
         int starty = (int) get_y() / map.get_tile_height();
         int endx = (int) (get_x() + get_width()) / map.get_tile_width();
         int endy = (int) (get_y() + get_height()) / map.get_tile_height();
         int len = (endx - startx) * (endy - starty);
+        int offx = map.get_offx();
+        int offy = map.get_offy();
         float brightness = 0;
         for (int i = startx; i < endx; i++)
             for (int j = starty; j < endy; j++) {
