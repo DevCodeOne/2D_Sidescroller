@@ -33,10 +33,10 @@ public class Platform extends Entity implements Tick {
         this.hovers(true);
         this.attach_event(new EntityEvent() {
             public void on_collision(Entity entity, Entity entity2) {
-                if (entity_index > 4 || !(entity2 instanceof Player))
+                if (!(entity2 instanceof Player))
                     return;
                 if (entity2.get_velocity_y() >= 0) {
-                    if (entity.get_y() - entity2.get_y() > 2) {
+                    if (entity.get_y() - entity2.get_y() > 1) {
                         Vector2f old_position = new Vector2f(entity2.get_x(), entity2.get_y());
                         entity2.set_pos(entity2.get_x(), entity.get_y() - entity2.get_height());
                         if (Physics.check_for_collision(((Platform) entity).get_map(), entity2)) {

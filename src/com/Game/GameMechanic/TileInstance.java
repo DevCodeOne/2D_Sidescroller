@@ -8,22 +8,40 @@ public class TileInstance {
     private boolean transparent;
     private Pixmap[] pixmap;
     private int frames;
+    private int type;
+    private int rgb_index;
+    private int index;
 
-    public TileInstance(boolean transparent, boolean solid, Pixmap pixmap) {
-        this.transparent = transparent;
-        this.solid = solid;
-        this.pixmap = new Pixmap[1];
-        this.pixmap[0] = pixmap;
-        this.frames = 1;
+    public static final int TYPE_TORCH = 1;
+    public static final int TYPE_TRAP = 2;
+    public static final int TYPE_LAVA = 3;
+    public static final int TYPE_TRAPDOOR = 4;
+    public static final int TYPE_BACKGROUND = 5;
+
+    public TileInstance(boolean transparent, boolean solid, Pixmap pixmap[], int type, int index, int rgb_index) {
+        this(transparent, solid, pixmap);
+        this.type = type;
+        this.rgb_index = rgb_index;
+        this.index = index;
     }
 
-    public TileInstance(boolean transparent, boolean solid, Pixmap[] pixmap) {
+    public TileInstance(boolean transparent, boolean solid, Pixmap pixmap, int type, int index, int rgb_index) {
+        this(transparent, solid, pixmap);
+        this.type = type;
+        this.rgb_index = rgb_index;
+        this.index = index;
+    }
+
+    protected TileInstance(boolean transparent, boolean solid, Pixmap pixmap) {
+        this(transparent, solid, new Pixmap[]{pixmap});
+    }
+
+    protected TileInstance(boolean transparent, boolean solid, Pixmap[] pixmap) {
         this.transparent = transparent;
         this.solid = solid;
         this.pixmap = new Pixmap[pixmap.length];
         this.frames = pixmap.length;
-        for (int i = 0; i < pixmap.length; i++)
-            this.pixmap[i] = pixmap[i];
+        System.arraycopy(pixmap, 0, this.pixmap, 0, pixmap.length);
     }
 
     public boolean is_solid() {
@@ -45,5 +63,11 @@ public class TileInstance {
     public int get_frames_count() {
         return frames;
     }
+
+    public int get_type() { return type; }
+
+    public int get_rgb_index() { return rgb_index; }
+
+    public int get_index() { return index; }
 
 }

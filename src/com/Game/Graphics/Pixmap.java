@@ -1,9 +1,7 @@
 package com.Game.Graphics;
 
-import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferInt;
-import java.io.IOException;
 
 public class Pixmap {
 
@@ -22,19 +20,6 @@ public class Pixmap {
         for (int i = 0; i < height; i++) {
             off[i] = i * width;
         }
-    }
-
-    public static Pixmap load_image(String src) {
-        try {
-            BufferedImage image = ImageIO.read(Pixmap.class.getResource(src));
-            BufferedImage tmp = new BufferedImage(image.getWidth(), image.getHeight(), BufferedImage.TYPE_INT_RGB);
-            tmp.getGraphics().drawImage(image, 0, 0, null);
-            Pixmap pixmap = new Pixmap(tmp);
-            return pixmap;
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return null;
     }
 
     public void blit(Pixmap pixmap, int x, int y, boolean transparent) {

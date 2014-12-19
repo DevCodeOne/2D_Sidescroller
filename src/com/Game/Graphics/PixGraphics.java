@@ -1,5 +1,7 @@
 package com.Game.Graphics;
 
+import com.Game.Resources.ResourceLoader;
+
 public class PixGraphics {
 
     private Pixmap render_target;
@@ -12,7 +14,7 @@ public class PixGraphics {
     }
 
     public void load_font(String src, int size_x) {
-        font = Pixmap.load_image(src);
+        font = ResourceLoader.load_image(src);
         font_width = size_x;
     }
 

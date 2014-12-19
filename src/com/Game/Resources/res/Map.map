@@ -1,0 +1,26 @@
+MAP :
+image : res/map.png
+TILE :
+index : 0; transparent : false; solid : true; image : res/brick.png; rgb_index : 0; type : 0
+TILE :
+index : 1; transparent : false; solid : true; image : res/moss_brick.png; rgb_index : 32526; type : 0
+TILE :
+index : 2; transparent : false; solid : false; image : res/air.png; rgb_index : 16777215; type : 5
+TILE :
+index : 3; transparent : true; solid : false; image : res/grass.png; rgb_index : 255; type : 0
+TILE :
+index : 4; transparent : true; solid : false; image : res/trap_hidden.png res/trap_exposed.png; rgb_index : 16711680; type : 2
+TILE :
+index : 5; transparent : true; solid : true; image : res/trap_door.png res/trap_door2.png; rgb_index : 8323072; type : 4
+TILE :
+index : 6; transparent : true; solid : false; image : res/torch.png res/torch2.png; rgb_index : 38143; type : 1
+TILE :
+index : 7; transparent : false; solid : false; image : res/lava.png res/lava2.png; rgb_index : 16756224; type : 3
+PLAYER :
+posx : 10; posy : 10; image : res/player.png res/player2.png res/player3.png res/player4.png; max_velocity : 5.0f; health : 10
+HEARTH :
+image : res/heart.png res/half_heart.png res/empty_heart.png; count : 20
+ENEMY :
+posx : 300; posy : 0; image : res/enemy.png res/enemy2.png res/enemy.png res/enemy3.png; velocity : 1; health : 10; health_bar : res/healthbar.png
+PHYSICS :
+gravity : 0.75f; max_gravity : 7.0f

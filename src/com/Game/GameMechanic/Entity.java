@@ -28,9 +28,7 @@ public class Entity {
 
     public Entity(Pixmap[] frames, int x, int y) {
         this.frames = new Pixmap[frames.length];
-        for (int i = 0; i < frames.length; i++) {
-            this.frames[i] = frames[i];
-        }
+        System.arraycopy(frames, 0, this.frames, 0, frames.length);
         this.position = new Vector2f(x, y);
         this.velocity = new Vector2f();
         this.rectangle = new Rectangle(new Vector2f(position.get_x() - (get_width() >> 1), position.get_y()), new Vector2f(position.get_x() + (get_width() >> 1), position.get_y() + get_height()));
@@ -67,9 +65,9 @@ public class Entity {
         if (-offx > position.get_x() || -offy > position.get_y() || -offx + pixmap.get_width() < position.get_x() || -offy + pixmap.get_height() < position.get_y())
             return;
         if (!flip_vertically)
-            pixmap.blit(frames[frame_index], (int) (position.get_x() + offx) - (get_pixmap().get_width() >> 1), (int) (position.get_y() + offy), brightness, false);
+            pixmap.blit(frames[frame_index], (int) (position.get_x() + offx) - (get_pixmap().get_width() >> 1), (int) (position.get_y() + offy), brightness, true);
         else
-            pixmap.blit_flip_vertically(frames[frame_index], (int) (position.get_x() + offx) - (get_pixmap().get_width() >> 1), (int) (position.get_y() + offy), brightness, false);
+            pixmap.blit_flip_vertically(frames[frame_index], (int) (position.get_x() + offx) - (get_pixmap().get_width() >> 1), (int) (position.get_y() + offy), brightness, true);
     }
 
     public void set_pos(float x, float y) {

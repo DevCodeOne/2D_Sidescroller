@@ -21,6 +21,7 @@ public class Enemy extends Entity implements Tick {
         this.dir = 'L';
         this.map = map;
         this.set_health(health);
+        this.set_max_velocity(velocity);
     }
 
     public void attach_to_game_clock(GameClock clock) {
@@ -46,7 +47,7 @@ public class Enemy extends Entity implements Tick {
     }
 
     private void draw_health_bar(Pixmap pixmap, int offx, int offy) {
-        int health_per = (int) ((get_health() / get_health_stat()) * 10) * health_bar.get_width() / 10;
+        int health_per = (int) ((get_health() / get_health_stat()) * health_bar.get_width());
         pixmap.blit(health_bar, 0, 0, health_per, health_bar.get_height(), (int) (get_x() + offx) - (get_pixmap().get_width() >> 1), (int) (get_y() + offy) - 10, true);
     }
 
@@ -58,7 +59,6 @@ public class Enemy extends Entity implements Tick {
                 walk(velocity);
                 if (System.currentTimeMillis() - frame_last_changed() > 100)
                     inc_frame_index();
-                return;
             } else {
                 flip_vertically();
                 change_pos_by(-velocity, 0);
@@ -70,7 +70,6 @@ public class Enemy extends Entity implements Tick {
                     walk(-velocity);
                     if (System.currentTimeMillis() - frame_last_changed() > 100)
                         inc_frame_index();
-                    return;
                 }
             }
         } else if (dir == 'R') {
@@ -80,7 +79,6 @@ public class Enemy extends Entity implements Tick {
                 walk(-velocity);
                 if (System.currentTimeMillis() - frame_last_changed() > 100)
                     inc_frame_index();
-                return;
             } else {
                 flip_vertically();
                 change_pos_by(velocity, 0);
@@ -92,18 +90,13 @@ public class Enemy extends Entity implements Tick {
                     walk(velocity);
                     if (System.currentTimeMillis() - frame_last_changed() > 100)
                         inc_frame_index();
-                    return;
                 }
             }
         }
     }
 
-    public void change_dir() {
-        if (dir == 'R')
-            dir = 'L';
-        else if (dir == 'L')
-            dir = 'R';
-        flip_vertically();
+    public void set_map(Map map) {
+        this.map = map;
     }
 
     public int tick_skip() {
