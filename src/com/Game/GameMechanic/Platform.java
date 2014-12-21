@@ -1,23 +1,21 @@
 package com.Game.GameMechanic;
 
+import com.Game.Game;
 import com.Game.Graphics.Pixmap;
 import com.Game.Mathematics.Vector2f;
 import com.Game.Timing.GameClock;
 import com.Game.Timing.Tick;
+import com.sun.org.apache.xml.internal.serializer.utils.SystemIDResolver;
 
 
 public class Platform extends Entity implements Tick {
 
     private Map map;
-    private Vector2f start, end;
     private Vector2f direction;
-    private float len;
-    private float start_len;
-    private char action;
+    private double len;
+    private double start_len;
     private Entity carry[];
     private int entity_index;
-
-    // TODO Fix problems with platform
 
     public Platform(Pixmap pixmap, int startx, int starty, int endx, int endy, Map map) {
         this(new Pixmap[]{pixmap}, startx, starty, endx, endy, map);
@@ -25,13 +23,10 @@ public class Platform extends Entity implements Tick {
 
     public Platform(Pixmap[] pixmap, int startx, int starty, int endx, int endy, Map map) {
         super(pixmap, startx, starty);
-        this.start = new Vector2f(startx, starty);
-        this.end = new Vector2f(endx, endy);
         this.direction = new Vector2f(endx - startx, endy - starty);
         this.len = direction.get_len();
         this.start_len = direction.get_len();
         this.direction.normalize();
-        this.action = 'n';
         this.map = map;
         this.carry = new Entity[5];
         this.hovers(true);
@@ -40,23 +35,14 @@ public class Platform extends Entity implements Tick {
                 if (!(entity2 instanceof Player))
                     return;
                 if (entity2.get_velocity_y() >= 0) {
-                    if (entity.get_y() - (entity2.get_y() + entity2.get_height()) < 2) {
+                    if (Math.abs(entity.get_y() - (entity2.get_y() + entity2.get_height())) < 10) {
                         for (int i = 0; i < carry.length; i++) { // avoid duplicates
                             if (carry[i] == entity2)
                                 return;
                         }
-                        Vector2f old_position = new Vector2f(entity2.get_x(), entity2.get_y());
-                        entity2.set_pos(entity2.get_x(), entity.get_y() - entity2.get_height());
-                        if (Physics.check_for_collision(((Platform) entity).get_map(), entity2)) {
-                            entity2.set_pos(old_position.get_x(), old_position.get_y());
-                            return;
-                        }
-                        entity2.set_pos(old_position.get_x(), old_position.get_y());
-                        ((Platform) entity).get_map().toggle_events(entity2, Map.ON_LEAVE);
-                        entity2.set_pos(entity2.get_x(), entity.get_y() - entity2.get_height());
                         carry[entity_index] = entity2;
-                        entity2.set_velocity_y(0);
                         entity2.set_on_ground(true);
+                        entity2.set_y(get_y() - entity2.get_height() + 1);
                         entity_index++;
                     }
                 }
@@ -67,66 +53,35 @@ public class Platform extends Entity implements Tick {
 
     @Override
     public void tick() {
-        if (action == 'n') {
-            if (len > 1) {
-                change_pos_by(direction.get_x(), direction.get_y());
-                if (!Physics.check_for_collision(map, this) && (get_x() / map.get_tile_width() < map.get_width())) {
-                    for (int i = 0; i < carry.length; i++) {
-                        if (carry[i] != null) {
-                            carry[i].change_pos_by(direction.get_x(), direction.get_y());
-                            if (Physics.check_for_collision(map, carry[i])) {
-                                carry[i].change_pos_by(-direction.get_x(), -direction.get_y());
-                            }
-                        }
+        change_pos_by(direction.get_x(), direction.get_y());
+        if ((!Physics.check_for_collision(map, this) && (get_x() / map.get_tile_width() < map.get_width())) && len > 1) {
+            for (int i = 0; i < carry.length; i++) {
+                if (carry[i] != null) {
+                    carry[i].change_pos_by(direction.get_x(), direction.get_y());
+                    if (Physics.check_for_collision(map, carry[i])) {
+                        carry[i].change_pos_by(-direction.get_x(), -direction.get_y());
                     }
-                } else {
-                    change_pos_by(-direction.get_x(), -direction.get_y());
-                    action = 'o';
-                    direction .mult(-1, -1);
-                    len = start_len;
-                    return;
                 }
-                len--;
-            } else {
-                action = 'o';
-                direction.mult(-1, -1);
-                len = start_len;
-                return;
             }
-
-        } else if (action == 'o') {
-            if (len > 1) {
-                change_pos_by(direction.get_x(), direction.get_y());
-                if (!Physics.check_for_collision(map, this) && (get_x() / map.get_tile_width() < map.get_width())) {
-                    for (int i = 0; i < carry.length; i++) {
-                        if (carry[i] != null) {
-                            carry[i].change_pos_by(direction.get_x(), direction.get_y());
-                            if (Physics.check_for_collision(map, carry[i])) {
-                                carry[i].change_pos_by(-direction.get_x(), -direction.get_y());
-                            }
-                        }
-                    }
-                } else {
-                    change_pos_by(-direction.get_x(), -direction.get_y());
-                    action = 'n';
-                    direction .mult(-1, -1);
-                    len = start_len;
-                    return;
-                }
-                len--;
-            } else {
-                action = 'n';
-                direction .mult(-1, -1);
-                len = start_len;
-                return;
-            }
+            len--;
+        } else {
+            change_pos_by(-direction.get_x(), -direction.get_y());
+            direction.negate();
+            len = start_len;
         }
+
+
         for (int i = 0; i < carry.length; i++) {
             if (carry[i] != null) {
-                carry[i] = null;
+                if (!carry[i].get_bounds().intersects(this.get_bounds()) || carry[i].get_velocity_y() < 0) {
+                    carry[i] = null;
+                    entity_index--;
+                } else {
+                    carry[i].set_on_ground(true);
+                    carry[i].set_y(get_y() - carry[i].get_height() + 1);
+                }
             }
         }
-        entity_index = 0;
     }
 
     public void set_map(Map map) {

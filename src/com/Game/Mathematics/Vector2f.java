@@ -2,9 +2,9 @@ package com.Game.Mathematics;
 
 public class Vector2f {
 
-    private float x, y;
+    private double x, y;
 
-    public Vector2f(float x, float y) {
+    public Vector2f(double x, double y) {
         this.x = x;
         this.y = y;
     }
@@ -17,7 +17,7 @@ public class Vector2f {
         this(0, 0);
     }
 
-    public void setTo(float x, float y) {
+    public void setTo(double x, double y) {
         this.x = x;
         this.y = y;
     }
@@ -26,22 +26,22 @@ public class Vector2f {
         setTo(vector2f.x, vector2f.y);
     }
 
-    public void add(float x, float y) {
-        this.x += x;
-        this.y += y;
+    public void add(double x, double y) {
+        this.x = this.x + x;
+        this.y = this.y + y;
     }
 
-    public void sub(float x, float y) {
+    public void sub(double x, double y) {
         this.x -= x;
         this.y -= y;
     }
 
-    public void mult(float x, float y) {
+    public void mult(double x, double y) {
         this.x *= x;
         this.y *= y;
     }
 
-    public void div(float x, float y) {
+    public void div(double x, double y) {
         this.x /= x;
         this.y /= y;
     }
@@ -54,10 +54,6 @@ public class Vector2f {
         sub(vector2f.x, vector2f.y);
     }
 
-    public void mult(Vector2f vector2f) {
-        mult(vector2f.x, vector2f.y);
-    }
-
     public void div(Vector2f vector2f) {
         div(vector2f.x, vector2f.y);
     }
@@ -66,24 +62,26 @@ public class Vector2f {
         mult(-1, -1);
     }
 
-    public float get_dot_product(Vector2f vector2f) {
+    public double get_dot_product(Vector2f vector2f) {
         return x * vector2f.x + y * vector2f.y;
     }
 
-    public float get_len() {
-        return (float) Math.sqrt(x * x + y * y);
+    public double get_len() {
+        return (double) Math.sqrt(x * x + y * y);
     }
 
     public void normalize() {
-        float len = get_len();
+        double len = get_len();
         div(len, len);
     }
 
-    public float get_x() {
+    public double get_x() {
         return x;
     }
 
-    public float get_y() {
+    public double get_y() {
         return y;
     }
+
+    public String toString() { return "[ " + (double)x + ", " + (double)y + " ]"; }
 }

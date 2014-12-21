@@ -66,6 +66,7 @@ public class Physics implements Tick {
 
             if (entity.ignores_physics())
                 continue;
+
             if (entity.get_velocity_y() < max_factor && !entity.is_on_ground())
                 entity.inc_velocity_y(factor);
 
@@ -88,6 +89,8 @@ public class Physics implements Tick {
             } else {
                 walk_y = false;
             }
+
+            // x-dir
             entity.change_pos_by(entity.get_velocity_x(), 0);
             walk_x = true;
             if (check_for_collision(map, entity)) {
@@ -106,6 +109,7 @@ public class Physics implements Tick {
 
             if (!check_for_solid_object_bottom(map, entity))
                 entity.set_on_ground(false);
+
         }
     }
 

@@ -265,7 +265,7 @@ public class MapLoader {
         }
 
         physics = new Physics(map, gravity, max_gravity);
-        clock = new GameClock(15, 1024);
+        clock = new GameClock(60, 1024);
         player.setMap(map);
         player.set_max_velocity(5);
         player.attach_event(new EntityEvent() {
@@ -298,6 +298,8 @@ public class MapLoader {
             physics.add_entity(enemy_arr[i]);
         }
 
+        physics.attach_to_game_clock(clock);
+
         Platform platform_arr[] = new Platform[platforms.size()];
 
         for (int i = 0; i < platform_arr.length; i++) {
@@ -308,7 +310,6 @@ public class MapLoader {
         }
 
         physics.add_entity(player);
-        physics.attach_to_game_clock(clock);
         map.attach_to_game_clock(clock);
 
         return new LoadedMap(map, tileInstances_arr, player, physics, clock, hearts, enemy_arr, platform_arr);

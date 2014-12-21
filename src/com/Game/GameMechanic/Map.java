@@ -47,7 +47,7 @@ public class Map implements Tick {
         clock.attach(this);
     }
 
-    public void scroll_by(float x, float y) {
+    public void scroll_by(double x, double y) {
         offx  -= x;
         offy  -= y;
     }

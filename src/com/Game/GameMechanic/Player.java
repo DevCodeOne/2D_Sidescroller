@@ -22,4 +22,10 @@ public class Player extends Entity {
         this.map = map;
     }
 
+    @Override
+    public void change_pos_by(double x, double y) {
+        position.add(x, y);
+        rectangle.setRect(position.get_x() - (get_width() >> 1), position.get_y(), get_width(), get_height());
+    }
+
 }

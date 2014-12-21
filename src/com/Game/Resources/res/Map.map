@@ -11,7 +11,7 @@ index : 3; transparent : true; solid : false; image : res/grass.png; rgb_index :
 TILE :
 index : 4; transparent : true; solid : false; image : res/trap_hidden.png res/trap_exposed.png; rgb_index : 16711680; type : 2
 TILE :
-index : 5; transparent : true; solid : true; image : res/trap_door.png res/trap_door2.png; rgb_index : 8323072; type : 4
+index : 5; transparent : true; solid : true; image : res/trap_door_closed.png res/trap_door_opened.png; rgb_index : 8323072; type : 4
 TILE :
 index : 6; transparent : true; solid : false; image : res/torch.png res/torch2.png; rgb_index : 38143; type : 1
 TILE :
@@ -25,4 +25,4 @@ posx : 300; posy : 0; image : res/enemy.png res/enemy2.png res/enemy.png res/ene
 PHYSICS :
 gravity : 0.75f; max_gravity : 7.0f
 PLATFORM :
-image : res/platform.png; startx : 10; starty : 250; destx : 100; desty : 400
+image : res/platform.png; startx : 310; starty : 310; destx : 410; desty : 350

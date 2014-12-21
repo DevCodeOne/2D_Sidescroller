@@ -6,7 +6,6 @@ import com.Game.Timing.Tick;
 
 public class Enemy extends Entity implements Tick {
 
-    private char dir;
     private float velocity;
     private Map map;
     private Pixmap health_bar;
@@ -18,7 +17,6 @@ public class Enemy extends Entity implements Tick {
     public Enemy(Pixmap[] frames, int x, int y, float health, float velocity, Map map) {
         super(frames, x, y);
         this.velocity = velocity;
-        this.dir = 'L';
         this.map = map;
         this.set_health(health);
         this.set_max_velocity(velocity);
@@ -52,46 +50,18 @@ public class Enemy extends Entity implements Tick {
     }
 
     public void tick() {
-        if (dir == 'L') {
-            change_pos_by(velocity, 0);
-            if (Physics.check_for_solid_object_bottom(map, this) && !Physics.check_for_collision(map, this) && (get_x() / map.get_tile_width() < map.get_width())) {
-                change_pos_by(-velocity, 0);
-                walk(velocity);
-                if (System.currentTimeMillis() - frame_last_changed() > 100)
-                    inc_frame_index();
-            } else {
-                flip_vertically();
-                change_pos_by(-velocity, 0);
-                set_frame_index(0);
-                dir = 'R';
-                change_pos_by(-velocity, 0);
-                if (Physics.check_for_solid_object_bottom(map, this) && !Physics.check_for_collision(map, this) && get_x() > 0) {
-                    change_pos_by(velocity, 0);
-                    walk(-velocity);
-                    if (System.currentTimeMillis() - frame_last_changed() > 100)
-                        inc_frame_index();
-                }
-            }
-        } else if (dir == 'R') {
+        change_pos_by(velocity, 0);
+        if (Physics.check_for_solid_object_bottom(map, this) && !Physics.check_for_collision(map, this) && (get_x() / map.get_tile_width() < map.get_width()) && get_x() > 0) {
             change_pos_by(-velocity, 0);
-            if (Physics.check_for_solid_object_bottom(map, this) && !Physics.check_for_collision(map, this) && get_x() > 0) {
-                change_pos_by(velocity, 0);
-                walk(-velocity);
-                if (System.currentTimeMillis() - frame_last_changed() > 100)
-                    inc_frame_index();
-            } else {
-                flip_vertically();
-                change_pos_by(velocity, 0);
-                set_frame_index(0);
-                dir = 'L';
-                change_pos_by(velocity, 0);
-                if (Physics.check_for_solid_object_bottom(map, this) && !Physics.check_for_collision(map, this) && (get_x() / map.get_tile_width() < map.get_width())) {
-                    change_pos_by(-velocity, 0);
-                    walk(velocity);
-                    if (System.currentTimeMillis() - frame_last_changed() > 100)
-                        inc_frame_index();
-                }
-            }
+            walk(velocity);
+            if (System.currentTimeMillis() - frame_last_changed() > 100)
+                inc_frame_index();
+        } else {
+            flip_vertically();
+            velocity *= -1;
+            change_pos_by(velocity, 0);
+            change_pos_by(velocity, 0);
+            set_frame_index(0);
         }
     }
 
