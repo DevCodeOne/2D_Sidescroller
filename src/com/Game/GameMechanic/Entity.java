@@ -71,6 +71,11 @@ public class Entity {
             pixmap.blit(frames[frame_index], (int) (position.get_x() + offx) - (get_pixmap().get_width() >> 1), (int) (position.get_y() + offy), (float)brightness, true);
         else
             pixmap.blit_flip_vertically(frames[frame_index], (int) (position.get_x() + offx) - (get_pixmap().get_width() >> 1), (int) (position.get_y() + offy), (float)brightness, true);
+    }
+
+    public void draw_bounding_box(Pixmap pixmap, Map map) {
+        int offx = map.get_offx();
+        int offy = map.get_offy();
         if (rectangle.getMinX() + offx > 0 && rectangle.getMinX() + offx < pixmap.get_width() && rectangle.getMinY() + offy > 0 && rectangle.getMinY() + offy < pixmap.get_height())
             pixmap.set_pixel(255 << 16, (int) rectangle.getMinX() + offx, (int) rectangle.getMinY() + offy);
         if (rectangle.getMaxX() + offx > 0 && rectangle.getMaxX() + offx < pixmap.get_width() && rectangle.getMaxY() + offy > 0 && rectangle.getMaxY() + offy < pixmap.get_height())
@@ -114,9 +119,11 @@ public class Entity {
     }
 
     public boolean walk(double x) {
-        if (max_velocity_x >= Math.abs(velocity.get_x() + x))
+        if (max_velocity_x >= Math.abs(velocity.get_x() + x)) {
             velocity.add(x, 0);
-        return true;
+            return true;
+        }
+        return false;
     }
 
     public void inc_frame_index() {

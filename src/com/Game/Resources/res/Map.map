@@ -1,5 +1,5 @@
 MAP :
-image : res/map.png
+level : res/map.png; light : 0.125f
 TILE :
 index : 0; transparent : false; solid : true; image : res/brick.png; rgb_index : 0; type : 0
 TILE :
@@ -21,7 +21,7 @@ posx : 10; posy : 10; image : res/player.png res/player2.png res/player3.png res
 HEARTH :
 image : res/heart.png res/half_heart.png res/empty_heart.png; count : 20
 ENEMY :
-posx : 300; posy : 0; image : res/enemy.png res/enemy2.png res/enemy.png res/enemy3.png; velocity : 1; health : 10; health_bar : res/healthbar.png
+posx : 500; posy : 0; image : res/enemy.png res/enemy2.png res/enemy.png res/enemy3.png; velocity : 0.5f; health : 10; health_bar : res/healthbar.png
 PHYSICS :
 gravity : 0.75f; max_gravity : 7.0f
 PLATFORM :

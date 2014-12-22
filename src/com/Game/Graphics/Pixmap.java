@@ -134,13 +134,6 @@ public class Pixmap {
         }
     }
 
-    public void clear() {
-        int len = width * height;
-        for (int i = 0; i < len; i++) {
-            pixels[i] = 0;
-        }
-    }
-
     public void clear(int color) {
         int len = width * height;
         for (int i = 0; i < len; i++) {

@@ -52,14 +52,12 @@ public class Enemy extends Entity implements Tick {
     public void tick() {
         change_pos_by(velocity, 0);
         if (Physics.check_for_solid_object_bottom(map, this) && !Physics.check_for_collision(map, this) && (get_x() / map.get_tile_width() < map.get_width()) && get_x() > 0) {
-            change_pos_by(-velocity, 0);
-            walk(velocity);
+            change_pos_by(velocity, 0);
             if (System.currentTimeMillis() - frame_last_changed() > 100)
                 inc_frame_index();
         } else {
             flip_vertically();
             velocity *= -1;
-            change_pos_by(velocity, 0);
             change_pos_by(velocity, 0);
             set_frame_index(0);
         }

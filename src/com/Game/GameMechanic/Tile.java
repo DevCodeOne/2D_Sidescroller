@@ -47,7 +47,7 @@ public class Tile {
         this.has_tick_events = true;
     }
 
-    public void set_emit_light(boolean val) {
+    public void emits_light(boolean val) {
         this.emits_light = val;
     }
 

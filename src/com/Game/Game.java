@@ -53,11 +53,10 @@ public class Game extends Display implements InputListener {
             map.enemies[i].draw(graphics, map.map);
         for (int i = 0; i < map.hearts.length; i++)
             map.hearts[i].draw(graphics);
-        pixgraphics.set_color(255 << 16 | 255 << 8 | 255);
+        pixgraphics.set_color(80 << 16 | 255);
         pixgraphics.draw_string_centered("Player", (int) map.player.get_x() + map.map.get_offx(), (int) map.player.get_y() + map.map.get_offy() - 10);
         pixgraphics.draw_string(Integer.toString(get_fps()), 20, 40);
         pixgraphics.draw_string("Fs", 50, 40);
-        pixgraphics.draw_string(map.player.is_on_ground() ? "true" : "false", 20, 60);
     }
 
     @Override
@@ -134,9 +133,9 @@ public class Game extends Display implements InputListener {
             life--;
         }
 
-        if (map.player.get_y() > -map.map.get_offy() + get_resy() - 250)
+        if (map.player.get_y() > -map.map.get_offy() + get_resy() - (get_resy() / 5))
             map.map.scroll_by(0, 5);
-        if (map.player.get_y() < -map.map.get_offy() + 250)
+        if (map.player.get_y() < -map.map.get_offy() + - (get_resy() / 5))
             map.map.scroll_by(0, -5);
         map.map.scroll_by(((map.player.get_x() + map.map.get_offx()) - (get_resx() >> 1)), 0);
         if (!map.player.is_on_ground() && map.player.get_velocity_y() <= 0)

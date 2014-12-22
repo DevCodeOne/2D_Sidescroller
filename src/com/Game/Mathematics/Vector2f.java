@@ -67,7 +67,7 @@ public class Vector2f {
     }
 
     public double get_len() {
-        return (double) Math.sqrt(x * x + y * y);
+        return Math.sqrt(x * x + y * y);
     }
 
     public void normalize() {
@@ -83,5 +83,5 @@ public class Vector2f {
         return y;
     }
 
-    public String toString() { return "[ " + (double)x + ", " + (double)y + " ]"; }
+    public String toString() { return "[ " + x + ", " + y + " ]"; }
 }

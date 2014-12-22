@@ -82,8 +82,8 @@ public class Map implements Tick {
 
     public void toggle_events(Entity entity, char events) {
         int startx_l = (int) ((entity.get_x() - (entity.get_width() >> 1)) / get_tile_width());
-        int startx_r = (int) (((entity.get_x() + (entity.get_width() >> 1)) / get_tile_width()) + .5f);
-        int starty_lr = (int) (((entity.get_y() - entity.get_height()) / get_tile_height()) + .5f);
+        int startx_r = (int) (((entity.get_x() + (entity.get_width() >> 1)) / get_tile_width()));
+        int starty_lr = (int) (((entity.get_y() - entity.get_height()) / get_tile_height()) + 1);
         int endy_lr = (int) (((entity.get_y() + entity.get_height()) / get_tile_height()) + .5f);
         for (int i = starty_lr; i <= endy_lr; i++) {
             for (int j = startx_l; j <= startx_r; j++) {
@@ -120,10 +120,6 @@ public class Map implements Tick {
 
     public Tile get_data(int x, int y) {
         return map_val[(x > 0 && x < width) ? x : x <= 0 ? 0 : width - 1][(y >= 0 && y < height) ? y : y < 0 ? 0 : height - 1];
-    }
-
-    public Tile get_data_absolute_pos(int x, int y) {
-        return get_data((int) ((x / (float) tile_width)), (int) ((y / (float) tile_height)));
     }
 
     public TileInstance get_tile_instance(char id) {

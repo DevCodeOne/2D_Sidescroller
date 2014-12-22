@@ -24,7 +24,7 @@ public class MapLoader {
     *
     * */
 
-    // TODO Improve the maploader
+    // TODO Improve the maploader (clean that shit up)
 
     public static LoadedMap loadMap(String mapFile) {
         ArrayList<TileInstance> tileInstances = new ArrayList<TileInstance>();
@@ -39,6 +39,7 @@ public class MapLoader {
 
         float gravity = 0;
         float max_gravity = 0;
+        float ambient_light = 0;
 
         Scanner scanner = new Scanner(mapFile);
         String line;
@@ -46,8 +47,13 @@ public class MapLoader {
             line = scanner.nextLine();
             if (line.contains("MAP")) {
                 line = scanner.nextLine();
-                if (line.contains("image")) {
-                    level = ResourceLoader.load_image(line.split(":")[1].trim());
+                String args[] = line.split(";");
+                for (String arg : args) {
+                    if (arg.contains("level")) {
+                        level = ResourceLoader.load_image(arg.split(":")[1].trim());
+                    } else if (arg.contains("light")) {
+                        ambient_light = Float.parseFloat(arg.split(":")[1].trim());
+                    }
                 }
             } else if (line.contains("TILE")) {
                 line = scanner.nextLine();
@@ -58,23 +64,23 @@ public class MapLoader {
                 boolean transparent = false;
                 boolean solid = false;
                 Pixmap textures[] = null;
-                for (int i = 0; i < args.length; i++) {
-                    if (args[i].contains("rgb_index")) {
-                        rgb_index = Integer.parseInt(args[i].split(":")[1].trim());
-                    } else if (args[i].contains("index")) {
-                        index = Integer.parseInt(args[i].split(":")[1].trim());
-                    } else if (args[i].contains("transparent")) {
-                        transparent = Boolean.parseBoolean(args[i].split(":")[1].trim());
-                    } else if (args[i].contains("solid")) {
-                        solid = Boolean.parseBoolean(args[i].split(":")[1].trim());
-                    } else if (args[i].contains("image")) {
-                        String image_array[] = args[i].split(":")[1].trim().split(" ");
+                for (String arg : args) {
+                    if (arg.contains("rgb_index")) {
+                        rgb_index = Integer.parseInt(arg.split(":")[1].trim());
+                    } else if (arg.contains("index")) {
+                        index = Integer.parseInt(arg.split(":")[1].trim());
+                    } else if (arg.contains("transparent")) {
+                        transparent = Boolean.parseBoolean(arg.split(":")[1].trim());
+                    } else if (arg.contains("solid")) {
+                        solid = Boolean.parseBoolean(arg.split(":")[1].trim());
+                    } else if (arg.contains("image")) {
+                        String image_array[] = arg.split(":")[1].trim().split(" ");
                         textures = new Pixmap[image_array.length];
                         for (int j = 0; j < image_array.length; j++) {
                             textures[j] = ResourceLoader.load_image(image_array[j]);
                         }
-                    } else if (args[i].contains("type")) {
-                        type = Integer.parseInt(args[i].split(":")[1].trim());
+                    } else if (arg.contains("type")) {
+                        type = Integer.parseInt(arg.split(":")[1].trim());
                     }
                 }
                 TileInstance instance = new TileInstance(transparent, solid, textures, type, index, rgb_index);
@@ -86,21 +92,21 @@ public class MapLoader {
                 float health = 0;
                 float max_velocity = 0;
                 Pixmap textures[] = null;
-                for (int i = 0; i < args.length; i++) {
-                    if (args[i].contains("posx")) {
-                        posx = Integer.parseInt(args[i].split(":")[1].trim());
-                    } else if (args[i].contains("posy")) {
-                        posy = Integer.parseInt(args[i].split(":")[1].trim());
-                    } else if (args[i].contains("image")) {
-                        String image_array[] = args[i].split(":")[1].trim().split(" ");
+                for (String arg : args) {
+                    if (arg.contains("posx")) {
+                        posx = Integer.parseInt(arg.split(":")[1].trim());
+                    } else if (arg.contains("posy")) {
+                        posy = Integer.parseInt(arg.split(":")[1].trim());
+                    } else if (arg.contains("image")) {
+                        String image_array[] = arg.split(":")[1].trim().split(" ");
                         textures = new Pixmap[image_array.length];
                         for (int j = 0; j < image_array.length; j++) {
                             textures[j] = ResourceLoader.load_image(image_array[j]);
                         }
-                    } else if (args[i].contains("health")) {
-                        health = Float.parseFloat(args[i].split(":")[1].trim());
-                    } else if (args[i].contains("max_velocity")) {
-                        max_velocity = Float.parseFloat(args[i].split(":")[1].trim());
+                    } else if (arg.contains("health")) {
+                        health = Float.parseFloat(arg.split(":")[1].trim());
+                    } else if (arg.contains("max_velocity")) {
+                        max_velocity = Float.parseFloat(arg.split(":")[1].trim());
                     }
                 }
                 player = new Player(textures, posx, posy, health, null);
@@ -108,11 +114,11 @@ public class MapLoader {
             } else if (line.contains("PHYSICS")) {
                 line = scanner.nextLine();
                 String args[] = line.split(";");
-                for (int i = 0; i < args.length; i++) {
-                    if (args[i].contains("max_gravity")) {
-                        max_gravity = Float.parseFloat(args[i].split(":")[1].trim());
-                    } else if (args[i].contains("gravity")) {
-                        gravity = Float.parseFloat(args[i].split(":")[1].trim());
+                for (String arg : args) {
+                    if (arg.contains("max_gravity")) {
+                        max_gravity = Float.parseFloat(arg.split(":")[1].trim());
+                    } else if (arg.contains("gravity")) {
+                        gravity = Float.parseFloat(arg.split(":")[1].trim());
                     }
                 }
 
@@ -124,23 +130,23 @@ public class MapLoader {
                 float velocity = 0;
                 Pixmap textures[] = null;
                 Pixmap health_bar = null;
-                for (int i = 0; i < args.length; i++) {
-                    if (args[i].contains("posx")) {
-                        posx = Integer.parseInt(args[i].split(":")[1].trim());
-                    } else if (args[i].contains("posy")) {
-                        posy = Integer.parseInt(args[i].split(":")[1].trim());
-                    } else if (args[i].contains("image")) {
-                        String image_array[] = args[i].split(":")[1].trim().split(" ");
+                for (String arg : args) {
+                    if (arg.contains("posx")) {
+                        posx = Integer.parseInt(arg.split(":")[1].trim());
+                    } else if (arg.contains("posy")) {
+                        posy = Integer.parseInt(arg.split(":")[1].trim());
+                    } else if (arg.contains("image")) {
+                        String image_array[] = arg.split(":")[1].trim().split(" ");
                         textures = new Pixmap[image_array.length];
                         for (int j = 0; j < image_array.length; j++) {
                             textures[j] = ResourceLoader.load_image(image_array[j]);
                         }
-                    } else if (args[i].contains("health_bar")) {
-                        health_bar = ResourceLoader.load_image(args[i].split(":")[1].trim());
-                    } else if (args[i].contains("health")) {
-                        health = Float.parseFloat(args[i].split(":")[1].trim());
-                    } else if (args[i].contains("velocity")) {
-                        velocity = Float.parseFloat(args[i].split(":")[1].trim());
+                    } else if (arg.contains("health_bar")) {
+                        health_bar = ResourceLoader.load_image(arg.split(":")[1].trim());
+                    } else if (arg.contains("health")) {
+                        health = Float.parseFloat(arg.split(":")[1].trim());
+                    } else if (arg.contains("velocity")) {
+                        velocity = Float.parseFloat(arg.split(":")[1].trim());
                     }
                 }
                 Enemy enemy = new Enemy(textures, posx, posy, health, velocity, null);
@@ -152,15 +158,15 @@ public class MapLoader {
                 String args[] = line.split(";");
                 Pixmap textures[] = null;
                 int count = 0;
-                for (int i = 0; i < args.length; i++) {
-                    if (args[i].contains("image")) {
-                        String image_array[] = args[i].split(":")[1].trim().split(" ");
+                for (String arg : args) {
+                    if (arg.contains("image")) {
+                        String image_array[] = arg.split(":")[1].trim().split(" ");
                         textures = new Pixmap[image_array.length];
                         for (int j = 0; j < image_array.length; j++) {
                             textures[j] = ResourceLoader.load_image(image_array[j]);
                         }
-                    } else if (args[i].contains("count")) {
-                        count = Integer.parseInt(args[i].split(":")[1].trim());
+                    } else if (arg.contains("count")) {
+                        count = Integer.parseInt(arg.split(":")[1].trim());
                     }
                 }
                 hearts = new Entity[count];
@@ -175,17 +181,17 @@ public class MapLoader {
                 int starty = 0;
                 int destx = 0;
                 int desty = 0;
-                for (int i = 0; i < args.length; i++) {
-                    if (args[i].contains("image")) {
-                        texture = ResourceLoader.load_image(args[i].split(":")[1].trim());
-                    } else if (args[i].contains("startx")) {
-                        startx = Integer.parseInt(args[i].split(":")[1].trim());
-                    } else if (args[i].contains("starty")) {
-                        starty = Integer.parseInt(args[i].split(":")[1].trim());
-                    } else if (args[i].contains("destx")) {
-                        destx = Integer.parseInt(args[i].split(":")[1].trim());
-                    } else if (args[i].contains("desty")) {
-                        desty = Integer.parseInt(args[i].split(":")[1].trim());
+                for (String arg : args) {
+                    if (arg.contains("image")) {
+                        texture = ResourceLoader.load_image(arg.split(":")[1].trim());
+                    } else if (arg.contains("startx")) {
+                        startx = Integer.parseInt(arg.split(":")[1].trim());
+                    } else if (arg.contains("starty")) {
+                        starty = Integer.parseInt(arg.split(":")[1].trim());
+                    } else if (arg.contains("destx")) {
+                        destx = Integer.parseInt(arg.split(":")[1].trim());
+                    } else if (arg.contains("desty")) {
+                        desty = Integer.parseInt(arg.split(":")[1].trim());
                     }
                 }
                 Platform platform = new Platform(texture, startx, starty, destx, desty, null);
@@ -194,9 +200,9 @@ public class MapLoader {
         }
         int look_up[] = new int[tileInstances.size()];
         TileInstance tileInstances_arr[] = new TileInstance[tileInstances.size()];
-        for (int i = 0; i < tileInstances.size(); i++) {
-            look_up[tileInstances.get(i).get_index()] = tileInstances.get(i).get_rgb_index();
-            tileInstances_arr[tileInstances.get(i).get_index()] = tileInstances.get(i);
+        for (TileInstance tileInstance : tileInstances) {
+            look_up[tileInstance.get_index()] = tileInstance.get_rgb_index();
+            tileInstances_arr[tileInstance.get_index()] = tileInstance;
         }
         map = new Map(level, look_up, tileInstances_arr);
 
@@ -217,15 +223,22 @@ public class MapLoader {
             } else if (tileInstances_arr[i].get_type() == TileInstance.TYPE_LAVA) {
                 map.attach_tick_event_global(new TickTileEvent() {
                     public void tick(Tile tile) {
-                        tile.inc_frame_index();
-                        tile.set_emiting_light(tile.get_emiting_light() == 0.5f ? 0.45f : 0.5f);
+                        if (tile.get_emiting_light() == 0) {
+                            tile.set_brightness((float) ((Math.sin(0) * 0.025f) + 0.45f));
+                            return;
+                        }
+                        double rad = Math.asin((tile.get_emiting_light() - 0.45f) * 80.0f);
+                        if (rad > 1.5)
+                            tile.inc_frame_index();
+                        rad = (rad + 0.1f) % (Math.PI * 0.5);
+                        tile.set_emiting_light((float) ((Math.sin(rad) * 0.0125f) + 0.45f)); /* [ 0.45 -> 0.5]*/
                     }
 
                     public int skip_ticks() {
-                        return 10;
+                        return 4;
                     }
                 }, (char) i);
-                map.get_light_map().set_light_emitting_global((char) i, 0.5f, 5);
+                map.get_light_map().set_light_emitting_global((char) i, 0.45f, 5);
             } else if (tileInstances_arr[i].get_type() == TileInstance.TYPE_TRAP) {
                 map.attach_events_global(new TileEvent() {
                     @Override
@@ -264,8 +277,10 @@ public class MapLoader {
             }
         }
 
+        map.get_light_map().set_ambient_light(ambient_light);
+
         physics = new Physics(map, gravity, max_gravity);
-        clock = new GameClock(60, 1024);
+        clock = new GameClock(16, 1024);
         player.setMap(map);
         player.set_max_velocity(5);
         player.attach_event(new EntityEvent() {

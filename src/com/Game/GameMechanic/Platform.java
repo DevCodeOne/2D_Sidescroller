@@ -1,11 +1,9 @@
 package com.Game.GameMechanic;
 
-import com.Game.Game;
 import com.Game.Graphics.Pixmap;
 import com.Game.Mathematics.Vector2f;
 import com.Game.Timing.GameClock;
 import com.Game.Timing.Tick;
-import com.sun.org.apache.xml.internal.serializer.utils.SystemIDResolver;
 
 
 public class Platform extends Entity implements Tick {
@@ -36,13 +34,14 @@ public class Platform extends Entity implements Tick {
                     return;
                 if (entity2.get_velocity_y() >= 0) {
                     if (Math.abs(entity.get_y() - (entity2.get_y() + entity2.get_height())) < 10) {
-                        for (int i = 0; i < carry.length; i++) { // avoid duplicates
-                            if (carry[i] == entity2)
+                        for (Entity aCarry : carry) { // avoid duplicates
+                            if (aCarry == entity2)
                                 return;
                         }
                         carry[entity_index] = entity2;
                         entity2.set_on_ground(true);
                         entity2.set_y(get_y() - entity2.get_height() + 1);
+                        entity2.set_velocity_y(0);
                         entity_index++;
                     }
                 }
@@ -55,12 +54,16 @@ public class Platform extends Entity implements Tick {
     public void tick() {
         change_pos_by(direction.get_x(), direction.get_y());
         if ((!Physics.check_for_collision(map, this) && (get_x() / map.get_tile_width() < map.get_width())) && len > 1) {
-            for (int i = 0; i < carry.length; i++) {
-                if (carry[i] != null) {
-                    carry[i].change_pos_by(direction.get_x(), direction.get_y());
-                    if (Physics.check_for_collision(map, carry[i])) {
-                        carry[i].change_pos_by(-direction.get_x(), -direction.get_y());
+            for (Entity aCarry : carry) {
+                if (aCarry != null) {
+                    aCarry.change_pos_by(direction.get_x(), direction.get_y());
+                    if (Physics.check_for_collision(map, aCarry)) {
+                        aCarry.change_pos_by(-direction.get_x(), -direction.get_y());
                     }
+                    aCarry.change_pos_by(-direction.get_x(), -direction.get_y());
+                    map.toggle_events(aCarry, Map.ON_LEAVE);
+                    aCarry.change_pos_by(direction.get_x(), direction.get_y());
+                    map.toggle_events(aCarry, Map.ON_STEP);
                 }
             }
             len--;

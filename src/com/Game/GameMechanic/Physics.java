@@ -21,9 +21,9 @@ public class Physics implements Tick {
     }
 
     public static boolean check_for_collision(Map map, Entity entity) {
-        int left = (int) (((entity.get_x() - (entity.get_width() >> 1)) / map.get_tile_width()) + 0.5f);
+        int left = (int) (((entity.get_x() - (entity.get_width() >> 1)) / (float)map.get_tile_width()));
         int top = (int) entity.get_y() / map.get_tile_height();
-        int right = (int) (((entity.get_x() + (entity.get_width() >> 1)) / map.get_tile_width()) + 0.5f);
+        int right = (int) (((entity.get_x() + (entity.get_width() >> 1)) / (float)map.get_tile_width()) + 1);
         int bottom = (int) (entity.get_y() + entity.get_height()) / map.get_tile_height();
         boolean collision = false;
         for (int i = top; i <= bottom; i++) {
@@ -59,11 +59,9 @@ public class Physics implements Tick {
 
     public void one_step() {
         int len = entities.size();
-        boolean walk_y;
-        boolean walk_x;
-        for (int i = 0; i < len; i++) {
-            Entity entity = entities.get(i);
-
+        boolean walk_y = false;
+        boolean walk_x = true;
+        for (Entity entity : entities) {
             if (entity.ignores_physics())
                 continue;
 
@@ -76,23 +74,22 @@ public class Physics implements Tick {
                 walk_y = true;
                 if (check_for_collision(map, entity)) {
                     entity.change_pos_by(0, -entity.get_velocity_y());
+                    int pos_block = ((int) ((entity.get_y() / (float) map.get_tile_height())) + 1) * map.get_tile_height();
+                    entity.change_pos_by(0, -(entity.get_y() - pos_block) - 2);
                     if (entity.get_velocity_y() > 0) {
                         entity.set_velocity_y(0);
                         entity.set_on_ground(true);
                         walk_y = false;
                     }
                 }
-                if (walk_y)
+                if (walk_y) {
                     entity.set_on_ground(false);
-                if (walk_y)
                     entity.change_pos_by(0, -entity.get_velocity_y());
-            } else {
-                walk_y = false;
+                }
             }
 
             // x-dir
             entity.change_pos_by(entity.get_velocity_x(), 0);
-            walk_x = true;
             if (check_for_collision(map, entity)) {
                 entity.change_pos_by(-entity.get_velocity_x(), 0);
                 walk_x = false;
@@ -100,12 +97,11 @@ public class Physics implements Tick {
             if (walk_x)
                 entity.change_pos_by(-entity.get_velocity_x(), 0);
 
-            if (walk_x || walk_y)
+            if (walk_x || walk_y) {
                 map.toggle_events(entity, Map.ON_LEAVE);
-
-            entity.change_pos_by(walk_x ? entity.get_velocity_x() : 0, walk_y ? entity.get_velocity_y() : 0);
-            if (walk_x || walk_y)
+                entity.change_pos_by(walk_x ? entity.get_velocity_x() : 0, walk_y ? entity.get_velocity_y() : 0);
                 map.toggle_events(entity, Map.ON_STEP);
+            }
 
             if (!check_for_solid_object_bottom(map, entity))
                 entity.set_on_ground(false);
