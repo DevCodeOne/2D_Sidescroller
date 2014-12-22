@@ -7,6 +7,7 @@ import com.Game.Timing.Tick;
 import java.util.ArrayList;
 
 public class Map implements Tick {
+
     public static final char ON_STEP = 0x1;
     public static final char ON_LEAVE = 0x2;
     private Tile map_val[][];
@@ -47,7 +48,7 @@ public class Map implements Tick {
         clock.attach(this);
     }
 
-    public void scroll_by(double x, double y) {
+    public void scroll_by(float x, float y) {
         offx  -= x;
         offy  -= y;
     }
@@ -131,11 +132,11 @@ public class Map implements Tick {
     }
 
     public int get_offx () {
-        return (int)(offx) ;
+        return (int)(offx + 0.5f);
     }
 
     public int get_offy () {
-        return (int)(offy) ;
+        return (int)(offy + 0.5f);
     }
 
     public int get_width() {

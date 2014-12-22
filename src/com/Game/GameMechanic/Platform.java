@@ -40,7 +40,7 @@ public class Platform extends Entity implements Tick {
                         }
                         carry[entity_index] = entity2;
                         entity2.set_on_ground(true);
-                        entity2.set_y(get_y() - entity2.get_height() + 1);
+                        entity2.set_pos(entity2.get_x(), get_y() - entity2.get_height() + 1);
                         entity2.set_velocity_y(0);
                         entity_index++;
                     }
@@ -81,7 +81,7 @@ public class Platform extends Entity implements Tick {
                     entity_index--;
                 } else {
                     carry[i].set_on_ground(true);
-                    carry[i].set_y(get_y() - carry[i].get_height() + 1);
+                    carry[i].set_pos(carry[i].get_x(), get_y() - carry[i].get_height() + 1);
                 }
             }
         }

@@ -109,7 +109,7 @@ public class MapLoader {
                         max_velocity = Float.parseFloat(arg.split(":")[1].trim());
                     }
                 }
-                player = new Player(textures, posx, posy, health, null);
+                player = new Player(textures, posx, posy, health);
                 player.set_max_velocity(max_velocity);
             } else if (line.contains("PHYSICS")) {
                 line = scanner.nextLine();
@@ -281,7 +281,6 @@ public class MapLoader {
 
         physics = new Physics(map, gravity, max_gravity);
         clock = new GameClock(16, 1024);
-        player.setMap(map);
         player.set_max_velocity(5);
         player.attach_event(new EntityEvent() {
             @Override

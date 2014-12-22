@@ -1,5 +1,5 @@
 MAP :
-level : res/map.png; light : 0.125f
+level : res/map.png; light : 0.5f
 TILE :
 index : 0; transparent : false; solid : true; image : res/brick.png; rgb_index : 0; type : 0
 TILE :

@@ -7,7 +7,7 @@ import java.awt.geom.Rectangle2D;
 
 public class Entity {
 
-    public double max_velocity_x;
+    public float max_velocity_x;
     protected Vector2f position;
     protected Vector2f velocity;
     protected Pixmap[] frames;
@@ -15,8 +15,8 @@ public class Entity {
     protected int frame_index;
     protected long frame_changed;
     protected boolean flip_vertically;
-    protected double health;
-    protected double health_stat;
+    protected float health;
+    protected float health_stat;
     protected boolean is_hovering;
     protected EntityEvent event;
     protected boolean has_events;
@@ -39,16 +39,16 @@ public class Entity {
         if (-offx > position.get_x() || -offy > position.get_y() || -offx + pixmap.get_width() < position.get_x() || -offy + pixmap.get_height() < position.get_y())
             return;
         if (!flip_vertically)
-            pixmap.blit(frames[frame_index], (int) (position.get_x() + offx) - (get_pixmap().get_width() >> 1), (int) (position.get_y() + offy), true);
+            pixmap.blit(frames[frame_index], (int) (get_int_x() + offx) - (get_pixmap().get_width() >> 1), (get_int_y() + offy), true);
         else
-            pixmap.blit_flip_vertically(frames[frame_index], (int) (position.get_x() + offx) - (get_pixmap().get_width() >> 1), (int) (position.get_y() + offy), true);
+            pixmap.blit_flip_vertically(frames[frame_index], (int) (get_int_x() + offx) - (get_pixmap().get_width() >> 1), (get_int_y() + offy), true);
     }
 
     public void draw(Pixmap pixmap) {
         if (!flip_vertically)
-            pixmap.blit(frames[frame_index], (int) (position.get_x()) - (get_pixmap().get_width() >> 1), (int) (position.get_y()), true);
+            pixmap.blit(frames[frame_index], (get_int_x()) - (get_pixmap().get_width() >> 1), get_int_y(), true);
         else
-            pixmap.blit_flip_vertically(frames[frame_index], (int) (position.get_x()) - (get_pixmap().get_width() >> 1), (int) (position.get_y()), true);
+            pixmap.blit_flip_vertically(frames[frame_index], (get_int_x()) - (get_pixmap().get_width() >> 1), get_int_y(), true);
     }
 
     public void draw(Pixmap pixmap, Map map) {
@@ -64,13 +64,13 @@ public class Entity {
             for (int j = starty; j < endy; j++) {
                 brightness += map.get_data(i, j).get_brightness();
             }
-        brightness /= (double) len;
+        brightness /= (float) len;
         if (-offx > position.get_x() || -offy > position.get_y() || -offx + pixmap.get_width() < position.get_x() || -offy + pixmap.get_height() < position.get_y())
             return;
         if (!flip_vertically)
-            pixmap.blit(frames[frame_index], (int) (position.get_x() + offx) - (get_pixmap().get_width() >> 1), (int) (position.get_y() + offy), (float)brightness, true);
+            pixmap.blit(frames[frame_index], (int) ((get_int_x() + offx) - (get_pixmap().get_width() >> 1) + 0.5f), (int) (get_int_y() + offy + 0.5f), (float)brightness, true);
         else
-            pixmap.blit_flip_vertically(frames[frame_index], (int) (position.get_x() + offx) - (get_pixmap().get_width() >> 1), (int) (position.get_y() + offy), (float)brightness, true);
+            pixmap.blit_flip_vertically(frames[frame_index], (int) ((get_int_x() + offx) - (get_pixmap().get_width() >> 1) + 0.5f), (int) (get_int_y() + offy + 0.5f), (float) brightness, true);
     }
 
     public void draw_bounding_box(Pixmap pixmap, Map map) {
@@ -82,23 +82,13 @@ public class Entity {
             pixmap.set_pixel(255 << 16, (int) rectangle.getMaxX() + offx, (int) rectangle.getMaxY() + offy);
     }
 
-    public void set_pos(double x, double y) {
+    public void set_pos(float x, float y) {
         position.setTo(x, y);
         rectangle.setRect(position.get_x() - (get_width() >> 1), position.get_y(), get_width(), get_height());
     }
 
-    public void set_x(double x) {
-        position.setTo(x, position.get_y());
-        rectangle.setRect(position.get_x() - (double)(get_width() >> 1), position.get_y(), get_width(), get_height());
-    }
-
-    public void set_y(double y) {
-        position.setTo(position.get_x(), y);
-        rectangle.setRect(position.get_x() - (double)(get_width() >> 1), position.get_y(), get_width(), get_height());
-    }
-
-    public void change_pos_by(double x, double y) {
-        position.add(x, y);
+    public void change_pos_by(float x, float y) {
+        position.setTo(x + position.get_x(), y + position.get_y());
         rectangle.setRect(position.get_x() - (get_width() >> 1), position.get_y(), get_width(), get_height());
     }
 
@@ -106,11 +96,11 @@ public class Entity {
         is_hovering = val;
     }
 
-    public void set_max_velocity(double val) {
+    public void set_max_velocity(float val) {
         this.max_velocity_x = val;
     }
 
-    public void jump(int iterations, double factor) {
+    public void jump(int iterations, float factor) {
         if (!on_ground) {
             return;
         }
@@ -118,12 +108,12 @@ public class Entity {
         inc_velocity_y(iterations * factor);
     }
 
-    public boolean walk(double x) {
+    public void walk(float x) {
         if (max_velocity_x >= Math.abs(velocity.get_x() + x)) {
             velocity.add(x, 0);
-            return true;
+        } else {
+            velocity.setTo((velocity.get_x() + x > 0) ? Math.abs(max_velocity_x) : -Math.abs(max_velocity_x), velocity.get_y());
         }
-        return false;
     }
 
     public void inc_frame_index() {
@@ -152,20 +142,28 @@ public class Entity {
         flip_vertically = !flip_vertically;
     }
 
-    public void inc_velocity_y(double val) {
+    public void inc_velocity_y(float val) {
         velocity.add(0, val);
     }
 
-    public void inc_velocity_x(double val) {
+    public void inc_velocity_x(float val) {
         velocity.add(val, 0);
     }
 
-    public double get_x() {
-        return (int) position.get_x();
+    public float get_x() {
+        return (((int)(position.get_x() * 1000)) / (float)1000);
     }
 
-    public double get_y() {
-        return (int) position.get_y();
+    public float get_y() {
+        return (((int)(position.get_y() * 1000)) / (float)1000);
+    }
+
+    public int get_int_x() {
+        return (int)(position.get_x() + 0.5f);
+    }
+
+    public int get_int_y() {
+        return (int)(position.get_y() + 0.5f);
     }
 
     public int get_width() {
@@ -176,19 +174,19 @@ public class Entity {
         return frames[frame_index].get_height();
     }
 
-    public double get_velocity_y() {
+    public float get_velocity_y() {
         return velocity.get_y();
     }
 
-    public void set_velocity_y(double val) {
+    public void set_velocity_y(float val) {
         velocity.setTo(velocity.get_x(), val);
     }
 
-    public double get_velocity_x() {
+    public float get_velocity_x() {
         return velocity.get_x();
     }
 
-    public void set_velocity_x(double val) {
+    public void set_velocity_x(float val) {
         velocity.setTo(val, velocity.get_y());
     }
 
@@ -234,7 +232,7 @@ public class Entity {
         return health;
     }
 
-    public void set_health(double val) {
+    public void set_health(float val) {
         health = val;
         health_stat = val;
     }

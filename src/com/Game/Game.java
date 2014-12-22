@@ -1,5 +1,6 @@
 package com.Game;
 
+import com.Game.GameMechanic.Player;
 import com.Game.Graphics.Display;
 import com.Game.Graphics.PixGraphics;
 import com.Game.Graphics.Pixmap;
@@ -15,7 +16,7 @@ public class Game extends Display implements InputListener {
     public static MapLoader.LoadedMap map;
     static KeyboardHandler handler;
     static PixGraphics pixgraphics;
-    static String actions = "N";
+    static String actions = "";
 
     public Game(int width, int height, int resx, int resy) {
         super(width, height, resx, resy);
@@ -46,17 +47,17 @@ public class Game extends Display implements InputListener {
     public void draw_graphics(Pixmap graphics) {
         graphics.clear(20 << 16 | 28 << 8 | 31);
         map.map.draw_map(graphics);
-        map.player.draw(graphics, map.map);
+        ((Player)map.player).draw(pixgraphics, map.map);
         for (int i = 0; i < map.platforms.length; i++)
             map.platforms[i].draw(graphics, map.map);
         for (int i = 0; i < map.enemies.length; i++)
             map.enemies[i].draw(graphics, map.map);
         for (int i = 0; i < map.hearts.length; i++)
             map.hearts[i].draw(graphics);
-        pixgraphics.set_color(80 << 16 | 255);
-        pixgraphics.draw_string_centered("Player", (int) map.player.get_x() + map.map.get_offx(), (int) map.player.get_y() + map.map.get_offy() - 10);
+
+        // fps
         pixgraphics.draw_string(Integer.toString(get_fps()), 20, 40);
-        pixgraphics.draw_string("Fs", 50, 40);
+        pixgraphics.draw_string("Fps", 50, 40);
     }
 
     @Override
@@ -78,50 +79,41 @@ public class Game extends Display implements InputListener {
 
     public void on_tick() {
         boolean sprint = false;
-        if (!(actions.length() > 1)) {
-            map.player.set_frame_index(0);
-            if (map.player.is_on_ground())
-                if (Math.abs(map.player.get_velocity_x()) > 1f) {
-                    if (map.player.get_velocity_x() > 0)
-                        map.player.inc_velocity_x(-1f);
+        while (actions.length() > 0) {
+            switch (actions.charAt(actions.length() -1)) {
+                case 'S' :
+                    sprint = true;
+                    break;
+                case 'D' :
+                    if (map.player.is_on_ground())
+                        map.player.walk(0.75f);
                     else
-                        map.player.inc_velocity_x(1f);
-                } else
-                    map.player.set_velocity_x(0);
-        }
-        if (actions.length() > 1 && actions.charAt(actions.length() - 1) == 'S') {
-            actions = actions.substring(0, actions.length() - 1);
-            sprint = true;
-        }
-        if (actions.length() > 1 && actions.charAt(actions.length() - 1) == 'D') {
-            actions = actions.substring(0, actions.length() - 1);
-            if (map.player.is_on_ground())
-                map.player.walk(!sprint ? 0.5f : 1.0f);
-            else
-                map.player.walk(0.25f);
-            if (System.currentTimeMillis() - map.player.frame_last_changed() > 75) {
-                int anim = (map.player.get_frame_index() + 1) % 3;
-                map.player.set_frame_index(anim);
+                        map.player.walk(0.25f);
+                    if (System.currentTimeMillis() - map.player.frame_last_changed() > 75) {
+                        int anim = (map.player.get_frame_index() + 1) % 3;
+                        map.player.set_frame_index(anim);
+                    }
+                    if (map.player.is_flipped())
+                        map.player.flip_vertically();
+                    break;
+                case 'A' :
+                    if (map.player.is_on_ground())
+                        map.player.walk(-0.75f);
+                    else
+                        map.player.walk(-0.25f);
+                    if (System.currentTimeMillis() - map.player.frame_last_changed() > 75) {
+                        map.player.set_frame_index((map.player.get_frame_index() + 1) % 3);
+                    }
+                    if (!map.player.is_flipped())
+                        map.player.flip_vertically();
+                    break;
+                case 'J' :
+                    map.player.jump(10, -1.25f);
+                    break;
             }
-            if (map.player.is_flipped())
-                map.player.flip_vertically();
-        } else if (actions.length() > 1 && actions.charAt(actions.length() - 1) == 'A') {
             actions = actions.substring(0, actions.length() - 1);
-            if (map.player.is_on_ground())
-                map.player.walk(!sprint ? -0.5f : -1.0f);
-            else
-                map.player.walk(-0.25f);
-            if (System.currentTimeMillis() - map.player.frame_last_changed() > 75) {
-                int anim = (map.player.get_frame_index() + 1) % 3;
-                map.player.set_frame_index(anim);
-            }
-            if (!map.player.is_flipped())
-                map.player.flip_vertically();
         }
-        if (actions.length() > 1 && actions.charAt(actions.length() - 1) == 'J') {
-            actions = actions.substring(0, actions.length() - 1);
-            map.player.jump(10, -1.25f);
-        }
+
         double life = (map.player.get_health() / map.player.get_health_stat()) * map.hearts.length;
         for (int i = 0; i < map.hearts.length; i++) {
             if (life >= 1)
@@ -133,11 +125,11 @@ public class Game extends Display implements InputListener {
             life--;
         }
 
-        if (map.player.get_y() > -map.map.get_offy() + get_resy() - (get_resy() / 5))
+        if (map.player.get_y() + map.map.get_offy() > (get_resy() - (get_resy() / 5)))
             map.map.scroll_by(0, 5);
-        if (map.player.get_y() < -map.map.get_offy() + - (get_resy() / 5))
+        if (map.player.get_y() + map.map.get_offy() < (get_resy() / 5))
             map.map.scroll_by(0, -5);
-        map.map.scroll_by(((map.player.get_x() + map.map.get_offx()) - (get_resx() >> 1)), 0);
+        map.map.scroll_by(((map.player.get_int_x() + map.map.get_offx()) - (get_resx() >> 1)), 0);
         if (!map.player.is_on_ground() && map.player.get_velocity_y() <= 0)
             map.player.set_frame_index(4);
     }

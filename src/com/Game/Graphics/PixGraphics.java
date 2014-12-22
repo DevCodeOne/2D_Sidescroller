@@ -41,4 +41,6 @@ public class PixGraphics {
     public void set_color(int color) {
         this.color = color;
     }
+
+    public Pixmap get_render_target() { return render_target; }
 }
